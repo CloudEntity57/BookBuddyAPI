@@ -1,0 +1,14 @@
+# Ignore Visual Studio files
+.vs/
+*.suo
+*.user
+
+# Ignore build outputs
+bin/
+obj/
+
+# Ignore environment files
+.env
+
+# Ignore Node modules (if full stack)
+node_modules/
