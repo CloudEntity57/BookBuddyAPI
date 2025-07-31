@@ -11,9 +11,17 @@ namespace BookBuddyAPI.Models.Domain
         public string UserName { get; set; }
         public string Email { get; set; }
         public string? AvatarUrl { get; set; }
+        public string? UserMessage { get; set; }
+        public string? BookOfInterest { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public List<Book>? WantToRead { get; set; }
         public List<UserBook>? WantReadJoin { get; set; }
+        //public List<Buddy> Buddies { get; set; }
+        public List<User>? SentBuddyRequests { get; set; }
+        public List<User>? ReceivedBuddyRequests { get; set; }
+        public List<BuddyRequest>? SentBuddyRequestsJoin { get; set; }
+        public List<BuddyRequest>? ReceivedBuddyRequestsJoin { get; set; }
+
     }
 }

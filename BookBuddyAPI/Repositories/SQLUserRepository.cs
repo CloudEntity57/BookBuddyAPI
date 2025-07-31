@@ -8,10 +8,12 @@ namespace BookBuddyAPI.Repositories
     public class SQLUserRepository : IUserRepository
     {
         private readonly BookBuddyGeneralDbContext dbContext;
+        private readonly ILogger<SQLUserRepository> logger;
 
-        public SQLUserRepository(BookBuddyGeneralDbContext dbContext)
+        public SQLUserRepository(BookBuddyGeneralDbContext dbContext, ILogger<SQLUserRepository> logger)
         {
             this.dbContext = dbContext;
+            this.logger = logger;
         }
         public async Task<User> CreateAsync(User user)
         {
@@ -42,9 +44,22 @@ namespace BookBuddyAPI.Repositories
                         Id = ub.BookId,
                         Title = ub.Book.Title,
                         Author = ub.Book.Author
+                    }).ToList() : null,
+                    ReceivedBuddyRequests = u.ReceivedBuddyRequestsJoin != null ? u.ReceivedBuddyRequestsJoin.Select(rb => new User
+                    {
+                        Id = rb.ActiveUserId,
+                        FirstName = rb.ActiveUser.FirstName,
+                        LastName = rb.ActiveUser.LastName,
+                        UserName = rb.ActiveUser.UserName,
+                        //Email = rb.ActiveUser.Email,
+                        AvatarUrl = rb.ActiveUser.AvatarUrl,
+                        CreatedAt = rb.DateAdded,
+                        UserMessage = rb.Note,
+                        BookOfInterest = rb.BookTitle
                     }).ToList() : null
                 })
                 .FirstOrDefaultAsync();
+            logger.LogInformation("GOT USER BY ID: " + userDomainModel);
             if(userDomainModel == null)
             {
                 return null;
@@ -83,7 +98,31 @@ namespace BookBuddyAPI.Repositories
                             CreatedAt = ubj.User.CreatedAt,
                             LastLoginAt = ubj.User.LastLoginAt
                         }).Where(ubj => ubj.Id != u.Id).ToList()
-                    }).ToList()
+                    }).ToList(),
+                    ReceivedBuddyRequests = u.ReceivedBuddyRequestsJoin != null ? u.ReceivedBuddyRequestsJoin.Select(rb => new User
+                    {
+                        Id = rb.ActiveUserId,
+                        FirstName = rb.ActiveUser.FirstName,
+                        LastName = rb.ActiveUser.LastName,
+                        UserName = rb.ActiveUser.UserName,
+                        //Email = rb.ActiveUser.Email,
+                        AvatarUrl = rb.ActiveUser.AvatarUrl,
+                        CreatedAt = rb.DateAdded,
+                        UserMessage = rb.Note,
+                        BookOfInterest = rb.BookTitle
+                    }).ToList() : null,
+                    SentBuddyRequests = u.SentBuddyRequestsJoin != null ? u.SentBuddyRequestsJoin.Select(sb => new User
+                    {
+                        Id = sb.PassiveUserId,
+                        FirstName = sb.PassiveUser.FirstName,
+                        LastName = sb.PassiveUser.LastName,
+                        UserName = sb.PassiveUser.UserName,
+                        //Email = rb.ActiveUser.Email,
+                        AvatarUrl = sb.PassiveUser.AvatarUrl,
+                        CreatedAt = sb.DateAdded,
+                        UserMessage = sb.Note,
+                        BookOfInterest = sb.BookTitle
+                    }).ToList() : null
                 })
                 .FirstOrDefaultAsync();
 

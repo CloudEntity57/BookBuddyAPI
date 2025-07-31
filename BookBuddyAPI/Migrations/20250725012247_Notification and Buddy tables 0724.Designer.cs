@@ -4,6 +4,7 @@ using BookBuddyAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookBuddyAPI.Migrations
 {
     [DbContext(typeof(BookBuddyGeneralDbContext))]
-    partial class BookBuddyGeneralDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250725012247_Notification and Buddy tables 0724")]
+    partial class NotificationandBuddytables0724
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

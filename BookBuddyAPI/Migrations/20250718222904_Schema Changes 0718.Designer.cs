@@ -4,6 +4,7 @@ using BookBuddyAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookBuddyAPI.Migrations
 {
     [DbContext(typeof(BookBuddyGeneralDbContext))]
-    partial class BookBuddyGeneralDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250718222904_Schema Changes 0718")]
+    partial class SchemaChanges0718
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,29 +44,6 @@ namespace BookBuddyAPI.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Buddy", b =>
-                {
-                    b.Property<Guid>("UserAId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserBId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("FriendsSince")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserAId", "UserBId");
-
-                    b.HasIndex("UserBId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Buddies");
-                });
-
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.BuddyRequest", b =>
                 {
                     b.Property<Guid>("ActiveUserId")
@@ -86,38 +66,6 @@ namespace BookBuddyAPI.Migrations
                     b.HasIndex("PassiveUserId");
 
                     b.ToTable("BuddyRequest");
-                });
-
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ActorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("RecipientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("RelatedEntityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
@@ -211,29 +159,6 @@ namespace BookBuddyAPI.Migrations
                     b.ToTable("UserUser");
                 });
 
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Buddy", b =>
-                {
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", "UserA")
-                        .WithMany()
-                        .HasForeignKey("UserAId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", "UserB")
-                        .WithMany()
-                        .HasForeignKey("UserBId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", null)
-                        .WithMany("Buddies")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("UserA");
-
-                    b.Navigation("UserB");
-                });
-
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.BuddyRequest", b =>
                 {
                     b.HasOne("BookBuddyAPI.Models.Domain.User", "ActiveUser")
@@ -309,8 +234,6 @@ namespace BookBuddyAPI.Migrations
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
                 {
-                    b.Navigation("Buddies");
-
                     b.Navigation("ReceivedBuddyRequestsJoin");
 
                     b.Navigation("SentBuddyRequestsJoin");

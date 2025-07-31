@@ -4,6 +4,7 @@ using BookBuddyAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookBuddyAPI.Migrations
 {
     [DbContext(typeof(BookBuddyGeneralDbContext))]
-    partial class BookBuddyGeneralDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250724044053_Notification and Buddy tables 0723")]
+    partial class NotificationandBuddytables0723
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,14 +55,9 @@ namespace BookBuddyAPI.Migrations
                     b.Property<DateTime>("FriendsSince")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("UserAId", "UserBId");
 
                     b.HasIndex("UserBId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Buddies");
                 });
@@ -225,10 +223,6 @@ namespace BookBuddyAPI.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", null)
-                        .WithMany("Buddies")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("UserA");
 
                     b.Navigation("UserB");
@@ -309,8 +303,6 @@ namespace BookBuddyAPI.Migrations
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
                 {
-                    b.Navigation("Buddies");
-
                     b.Navigation("ReceivedBuddyRequestsJoin");
 
                     b.Navigation("SentBuddyRequestsJoin");

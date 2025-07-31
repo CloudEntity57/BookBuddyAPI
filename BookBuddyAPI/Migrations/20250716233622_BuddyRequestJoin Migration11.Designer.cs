@@ -4,6 +4,7 @@ using BookBuddyAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookBuddyAPI.Migrations
 {
     [DbContext(typeof(BookBuddyGeneralDbContext))]
-    partial class BookBuddyGeneralDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250716233622_BuddyRequestJoin Migration11")]
+    partial class BuddyRequestJoinMigration11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace BookBuddyAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Book", b =>
+            modelBuilder.Entity("BookBuddyAPI.Models.DTO.BookDTO", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,98 +41,16 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Books");
+                    b.ToTable("BookDTO");
                 });
 
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Buddy", b =>
-                {
-                    b.Property<Guid>("UserAId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserBId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("FriendsSince")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserAId", "UserBId");
-
-                    b.HasIndex("UserBId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Buddies");
-                });
-
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.BuddyRequest", b =>
-                {
-                    b.Property<Guid>("ActiveUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PassiveUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BookTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ActiveUserId", "PassiveUserId");
-
-                    b.HasIndex("PassiveUserId");
-
-                    b.ToTable("BuddyRequest");
-                });
-
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ActorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("RecipientId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("RelatedEntityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
+            modelBuilder.Entity("BookBuddyAPI.Models.DTO.UserDTO", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AvatarUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BookOfInterest")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -148,7 +69,104 @@ namespace BookBuddyAPI.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserMessage")
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserDTO");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("603e74b2-511a-431c-b9d5-1db379a0eb0e"),
+                            CreatedAt = new DateTime(2025, 6, 23, 17, 40, 28, 901, DateTimeKind.Local).AddTicks(7489),
+                            Email = "joshthewise57@gmail.com",
+                            UserName = "HelioMoonWave Literati"
+                        });
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Book", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Books");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("603e74b2-512a-432c-b9d5-1db379a0eb0e"),
+                            Author = "Leo Tolstoy",
+                            Title = "War and Peace"
+                        });
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.BuddyRequest", b =>
+                {
+                    b.Property<Guid>("ActiveUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PassiveUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DateAdded")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ActiveUserId", "PassiveUserId");
+
+                    b.HasIndex("PassiveUserId");
+
+                    b.ToTable("BuddyRequest");
+
+                    b.HasData(
+                        new
+                        {
+                            ActiveUserId = new Guid("b8e244db-c0a5-440b-990f-50d65ac34add"),
+                            PassiveUserId = new Guid("603e74b2-511a-431c-b9d5-1db379a0eb0e"),
+                            DateAdded = new DateTime(2025, 6, 24, 17, 3, 28, 901, DateTimeKind.Local).AddTicks(7489),
+                            Note = "Trying out adding Ogre as a new buddy request value"
+                        });
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
@@ -181,6 +199,21 @@ namespace BookBuddyAPI.Migrations
                     b.ToTable("UserBook");
                 });
 
+            modelBuilder.Entity("BookDTOUserDTO", b =>
+                {
+                    b.Property<Guid>("UsersWantToReadId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WantToReadId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UsersWantToReadId", "WantToReadId");
+
+                    b.HasIndex("WantToReadId");
+
+                    b.ToTable("BookDTOUserDTO");
+                });
+
             modelBuilder.Entity("BookUser", b =>
                 {
                     b.Property<Guid>("UsersWantToReadId")
@@ -209,29 +242,6 @@ namespace BookBuddyAPI.Migrations
                     b.HasIndex("SentBuddyRequestsId");
 
                     b.ToTable("UserUser");
-                });
-
-            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Buddy", b =>
-                {
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", "UserA")
-                        .WithMany()
-                        .HasForeignKey("UserAId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", "UserB")
-                        .WithMany()
-                        .HasForeignKey("UserBId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", null)
-                        .WithMany("Buddies")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("UserA");
-
-                    b.Navigation("UserB");
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.BuddyRequest", b =>
@@ -272,6 +282,21 @@ namespace BookBuddyAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BookDTOUserDTO", b =>
+                {
+                    b.HasOne("BookBuddyAPI.Models.DTO.UserDTO", null)
+                        .WithMany()
+                        .HasForeignKey("UsersWantToReadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookBuddyAPI.Models.DTO.BookDTO", null)
+                        .WithMany()
+                        .HasForeignKey("WantToReadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BookUser", b =>
                 {
                     b.HasOne("BookBuddyAPI.Models.Domain.User", null)
@@ -309,8 +334,6 @@ namespace BookBuddyAPI.Migrations
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
                 {
-                    b.Navigation("Buddies");
-
                     b.Navigation("ReceivedBuddyRequestsJoin");
 
                     b.Navigation("SentBuddyRequestsJoin");

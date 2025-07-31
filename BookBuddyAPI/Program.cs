@@ -26,6 +26,8 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
 builder.Services.AddScoped<IBookRepository, SQLBookRepository>();
+builder.Services.AddScoped<IBuddyRepository, SQLBuddyRepository>();
+builder.Services.AddScoped<INotificationsRepository, SQLNotificationsRepository>();
 
 // Handle CORS
 
@@ -45,6 +47,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
 
 var app = builder.Build();

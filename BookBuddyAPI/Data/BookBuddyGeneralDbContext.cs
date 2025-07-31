@@ -15,33 +15,14 @@ namespace BookBuddyAPI.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<UserBook> UserBook { get; set; }
 
+        public DbSet<BuddyRequest> BuddyRequest { get; set; }
+        public DbSet<Buddy> Buddies { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // seed test data for users
-            var users = new List<UserDTO>()
-            {
-                new UserDTO()
-                {
-                    Id = new Guid("603e74b2-511a-431c-b9d5-1db379a0eb0e"),
-                    UserName = "HelioMoonWave Literati",
-                    Email = "joshthewise57@gmail.com",
-                    CreatedAt = new DateTime(2025, 6, 23, 17, 40, 28, 901, DateTimeKind.Local).AddTicks(7489)
-                }
-            };
-            modelBuilder.Entity<UserDTO>().HasData(users);
-            // seed test data for books
-            var books = new List<Book>()
-            {
-                new Book()
-                {
-                    Id = new Guid("603e74b2-512a-432c-b9d5-1db379a0eb0e"),
-                    Title = "War and Peace",
-                    Author = "Leo Tolstoy"
-                }
-            };
-            modelBuilder.Entity<Book>().HasData(books);
 
             modelBuilder.Entity<UserBook>()
                 .HasKey(ub => new { ub.UserId, ub.BookId }); // composite PK
@@ -49,20 +30,39 @@ namespace BookBuddyAPI.Data
                 .HasOne(ub => ub.User)
                 .WithMany(u => u.WantReadJoin)
                 .HasForeignKey(ub => ub.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<UserBook>()
                 .HasOne(ub => ub.Book)
                 .WithMany(b => b.UserBookJoin)
                 .HasForeignKey(ub => ub.BookId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<UserBook>().HasData(new
-            {
-                UserId = Guid.Parse("603e74b2-511a-431c-b9d5-1db379a0eb0e"),
-                BookId = Guid.Parse("603e74b2-512a-432c-b9d5-1db379a0eb0e"),
-                DateAdded = new DateTime(2025, 6, 24, 17, 03, 28, 901, DateTimeKind.Local).AddTicks(7489),
-                Note = "Trying out adding a want to read value"
-            });
+            modelBuilder.Entity<BuddyRequest>()
+                .HasKey(brj => new { brj.ActiveUserId, brj.PassiveUserId }); // composite PK
+            modelBuilder.Entity<BuddyRequest>()
+                .HasOne(brj => brj.ActiveUser)
+                .WithMany(u => u.SentBuddyRequestsJoin)
+                .HasForeignKey(brj => brj.ActiveUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<BuddyRequest>()
+                .HasOne(brj => brj.PassiveUser)
+                .WithMany(u => u.ReceivedBuddyRequestsJoin)
+                .HasForeignKey(brj => brj.PassiveUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<Buddy>()
+                .HasKey(b => new { b.UserAId, b.UserBId });
+            modelBuilder.Entity<Buddy>()
+                .HasOne(b => b.UserA)
+                .WithMany()
+                .HasForeignKey(b => b.UserAId)
+                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Buddy>()
+                .HasOne(b => b.UserB)
+                .WithMany()
+                .HasForeignKey(b => b.UserBId)
+                .OnDelete(DeleteBehavior.NoAction);
 
         }
     }
