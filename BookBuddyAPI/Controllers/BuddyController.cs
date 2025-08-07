@@ -2,27 +2,35 @@
 using BookBuddyAPI.Models.Domain;
 using BookBuddyAPI.Models.DTO;
 using BookBuddyAPI.Repositories;
+using BookBuddyAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace BookBuddyAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class BuddyController : ControllerBase
     {
         private readonly IMapper mapper;
         private readonly ILogger<BookController> logger;
         private readonly IBuddyRepository repository;
         private readonly INotificationsRepository notificationsRepository;
+        private readonly INotificationService notificationService;
+        private readonly IBuddyRequestService buddyRequestService;
 
-        public BuddyController(IMapper mapper, ILogger<BookController> logger, IBuddyRepository repository, INotificationsRepository notificationsRepository)
+        public BuddyController(IMapper mapper, ILogger<BookController> logger, IBuddyRepository repository, INotificationsRepository notificationsRepository, INotificationService notificationService, IBuddyRequestService buddyRequestService)
         {
             this.mapper = mapper;
             this.logger = logger;
             this.repository = repository;
             this.notificationsRepository = notificationsRepository;
+            this.notificationService = notificationService;
+            this.buddyRequestService = buddyRequestService;
         }
         [HttpPost]
         // POST: api/buddy
@@ -57,7 +65,25 @@ namespace BookBuddyAPI.Controllers
         public async Task<IActionResult> AddBuddyRequest([FromBody] BuddyRequestDTO buddyRequestDTO)
         {
             var buddyRequestDomainModel = mapper.Map<BuddyRequest>(buddyRequestDTO);
-            buddyRequestDomainModel = await repository.CreateBuddyRequestAsync(buddyRequestDomainModel);
+            //buddyRequestDomainModel = await repository.CreateBuddyRequestAsync(buddyRequestDomainModel);
+            //// Add new buddy request notification:
+            //var notification = new Notification
+            //{
+            //    Id = new Guid(),
+            //    RecipientId = buddyRequestDomainModel.PassiveUserId,
+            //    ActorId = buddyRequestDomainModel.ActiveUserId,
+            //    Type = NotificationType.BuddyRequest,
+            //    Timestamp = DateTime.UtcNow,
+            //    Message = buddyRequestDomainModel.Note
+            //};
+            ////await notificationService.NotifyBuddyRequestAsync(buddyRequestDomainModel.PassiveUserId,mapper.Map<NotificationDTO>(notification));
+            //Debug.WriteLine($"SendToUserAsync called for {buddyRequestDomainModel.PassiveUserId}");
+            //await notificationService.SendToUserAsync(buddyRequestDomainModel.PassiveUserId, "NewNotification", notification);
+            buddyRequestDomainModel = await buddyRequestService.CreateBuddyRequestAsync(buddyRequestDomainModel);
+            if(buddyRequestDomainModel == null)
+            {
+                return NotFound();
+            }
             return Ok(mapper.Map<BuddyRequestDTO>(buddyRequestDomainModel));
         }
 
