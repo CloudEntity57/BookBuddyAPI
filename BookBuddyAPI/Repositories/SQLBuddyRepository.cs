@@ -1,5 +1,6 @@
 ﻿using BookBuddyAPI.Data;
 using BookBuddyAPI.Models.Domain;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookBuddyAPI.Repositories
@@ -52,8 +53,6 @@ namespace BookBuddyAPI.Repositories
                 Timestamp = DateTime.UtcNow,
                 Message = buddyRequestDomainModel.Note
             };
-            await dbContext.Notifications.AddAsync(notification);
-            await dbContext.SaveChangesAsync();
             return buddyRequestDomainModel;   
         }
 

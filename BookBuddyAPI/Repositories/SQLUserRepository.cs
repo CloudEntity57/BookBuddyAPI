@@ -24,9 +24,6 @@ namespace BookBuddyAPI.Repositories
 
         public async Task<User> GetUserByIdAsync(Guid id)
         {
-            //var userDomainModel = await dbContext.Users
-            //    .Include("WantToRead")
-            //    .FirstOrDefaultAsync(x => x.Id == id);
             var userDomainModel = await dbContext.Users
                 .Where(x => x.Id == id)
                 .Select(u => new User
@@ -39,12 +36,24 @@ namespace BookBuddyAPI.Repositories
                     UserName = u.UserName,
                     CreatedAt = u.CreatedAt,
                     LastLoginAt = u.LastLoginAt,
-                    WantToRead = u.WantReadJoin != null ? u.WantReadJoin.Select(ub => new
-                    Book{
+                    WantToRead = u.WantReadJoin.Select(ub => new
+                    Book
+                    {
                         Id = ub.BookId,
                         Title = ub.Book.Title,
-                        Author = ub.Book.Author
-                    }).ToList() : null,
+                        Author = ub.Book.Author,
+                        UsersWantToRead = ub.Book.UserBookJoin.Select(ubj => new User
+                        {
+                            Id = ubj.User.Id,
+                            FirstName = ubj.User.FirstName,
+                            LastName = ubj.User.LastName,
+                            Email = ubj.User.Email,
+                            AvatarUrl = ubj.User.AvatarUrl,
+                            UserName = ubj.User.UserName,
+                            CreatedAt = ubj.User.CreatedAt,
+                            LastLoginAt = ubj.User.LastLoginAt
+                        }).Where(ubj => ubj.Id != u.Id).ToList()
+                    }).ToList(),
                     ReceivedBuddyRequests = u.ReceivedBuddyRequestsJoin != null ? u.ReceivedBuddyRequestsJoin.Select(rb => new User
                     {
                         Id = rb.ActiveUserId,
@@ -56,14 +65,27 @@ namespace BookBuddyAPI.Repositories
                         CreatedAt = rb.DateAdded,
                         UserMessage = rb.Note,
                         BookOfInterest = rb.BookTitle
+                    }).ToList() : null,
+                    SentBuddyRequests = u.SentBuddyRequestsJoin != null ? u.SentBuddyRequestsJoin.Select(sb => new User
+                    {
+                        Id = sb.PassiveUserId,
+                        FirstName = sb.PassiveUser.FirstName,
+                        LastName = sb.PassiveUser.LastName,
+                        UserName = sb.PassiveUser.UserName,
+                        //Email = rb.ActiveUser.Email,
+                        AvatarUrl = sb.PassiveUser.AvatarUrl,
+                        CreatedAt = sb.DateAdded,
+                        UserMessage = sb.Note,
+                        BookOfInterest = sb.BookTitle
                     }).ToList() : null
                 })
                 .FirstOrDefaultAsync();
-            logger.LogInformation("GOT USER BY ID: " + userDomainModel);
-            if(userDomainModel == null)
+
+            if (userDomainModel == null)
             {
                 return null;
             }
+            //userDomainModel.WantToRead?.ForEach( wtr => wtr.Include("Book"))
             return userDomainModel;
         }
 

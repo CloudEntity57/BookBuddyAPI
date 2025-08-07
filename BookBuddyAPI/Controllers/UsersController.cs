@@ -26,10 +26,25 @@ namespace BookBuddyAPI.Controllers
 
 
         [HttpGet]
-        [Route("{email}")]
+        [Route("email/{email}")]
         public async Task<IActionResult> GetUserByEmail([FromRoute] string email)
         {
             var userDomainModel = await repository.GetUserByEmailAsync(email);
+
+            if (userDomainModel == null)
+            {
+                return NotFound();
+            }
+            //return Ok(mapper.Map<UserDTO>(userDomainModel));
+            return Ok(mapper.Map<UserDTO>(userDomainModel));
+        }
+
+        [HttpGet]
+        [Route("id/{userId}")]
+        public async Task<IActionResult> GetUserById([FromRoute] string userId)
+        {
+            var userGuid = Guid.Parse(userId);
+            var userDomainModel = await repository.GetUserByIdAsync(userGuid);
 
             if (userDomainModel == null)
             {
