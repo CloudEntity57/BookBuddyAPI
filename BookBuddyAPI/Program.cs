@@ -79,25 +79,6 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IBuddyRequestService, BuddyRequestService>();
 
 
-
-
-//builder.Services.AddIdentityCore<IdentityUser>()
-//    .AddRoles<IdentityRole>()
-//    .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("BookBuddy")
-//    .AddEntityFrameworkStores<BookBuddyAuthDbContext>()
-//    .AddDefaultTokenProviders();
-
-//builder.Services.Configure<IdentityOptions>(options =>
-//{
-//    options.Password.RequireDigit = false;
-//    options.Password.RequireLowercase = false;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequireUppercase = false;
-//    options.Password.RequiredLength = 6;
-//    options.Password.RequiredUniqueChars = 1;
-
-//});
-
 static async Task AddUserGuidClaim(TokenValidatedContext context, string userEmail)
 {
     try
@@ -154,14 +135,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 Debug.WriteLine("OnMessageReceived Called");
 
-                // ?? This allows JWT to be passed via query string for WebSocket connections
+                // This allows JWT to be passed via query string for WebSocket connections
                 var accessToken = context.Request.Query["access_token"];
 
                 var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
                 var path = context.HttpContext.Request.Path;
                 Debug.WriteLine($"OnMessageReceived - Path: {path}, Token present: {!string.IsNullOrEmpty(accessToken)}");
 
-                //if (context.Request.Query["negotiateVersion"] == "1")
                 if (authHeader != null)
                 {
                     accessToken = authHeader.Substring("Bearer ".Length).Trim();
@@ -173,7 +153,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 }
 
 
-                // If the request is for our SignalR hub
+                // If the request is for SignalR hub
 
                 if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/notifications"))
                 {
@@ -191,11 +171,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 // Debug: Log all claims to see what's available
                 var claims = context.Principal?.Claims?.ToList();
-                string userEmail = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-                if(userEmail != null)
-                {
-                    await AddUserGuidClaim(context, userEmail);
-                }
+
                 if (claims != null)
                 {
                     foreach (var claim in claims)
@@ -203,6 +179,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                         Debug.WriteLine($"Claim Type: {claim.Type}, Value: {claim.Value}");
                     }
                 }
+
+                // Utilize user email to find the existing user and create a GUID claim for SignalR connectivity:
+                string userEmail = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+                if(userEmail != null)
+                {
+                    await AddUserGuidClaim(context, userEmail);
+                }
+
 
                 //return Task.CompletedTask;
             },

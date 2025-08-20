@@ -41,5 +41,18 @@ namespace BookBuddyAPI.Repositories
             }
             return notifications;
         }
+
+        public async Task<Notification> UpdateNotificationAsync(Guid notificationId, Notification notificationDomainModel)
+        {
+            var existingNotification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.Id == notificationId);
+            if (existingNotification == null)
+            {
+                return null;
+            }
+            existingNotification.IsRead = notificationDomainModel.IsRead;
+
+            await dbContext.SaveChangesAsync();
+            return existingNotification;
+        }
     }
 }

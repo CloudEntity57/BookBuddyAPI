@@ -19,6 +19,7 @@ namespace BookBuddyAPI.Controllers
             this.mapper = mapper;
             this.repository = repository;
         }
+
         [HttpPost]
         //POST: api/notifications
         public async Task<IActionResult> AddNotification([FromBody] NotificationDTO notificationDTO)
@@ -31,6 +32,7 @@ namespace BookBuddyAPI.Controllers
             }
             return Ok(notificationDomainModel);
         }
+
         [HttpGet]
         [Route("{userId}")]
         //GET: api/notifications/{userId}
@@ -39,6 +41,22 @@ namespace BookBuddyAPI.Controllers
             var id = Guid.Parse(userId);
             var notifications = await repository.GetUserNotificationsAsync(id);
             return Ok(mapper.Map<List<NotificationDTO>>(notifications));
+        }
+
+        [HttpPut]
+
+        //PUT: api/notifications/
+        [Route("{id}")]
+        public async Task<IActionResult> UpdateNotification([FromRoute] string id, [FromBody] NotificationDTO notificationDTO)
+        {
+            var notificationDomainModel = mapper.Map<Notification>(notificationDTO);
+            var guid = Guid.Parse(id);
+            notificationDomainModel = await repository.UpdateNotificationAsync(guid, notificationDomainModel);
+            if(notificationDomainModel == null)
+            {
+                return NotFound();
+            }
+            return Ok(mapper.Map<NotificationDTO>(notificationDomainModel));
         }
     }
 }
