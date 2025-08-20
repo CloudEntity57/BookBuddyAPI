@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Diagnostics;
-using System.Security.Claims;
 
 namespace BookBuddyAPI.Hubs.Notifications
 {
@@ -32,7 +31,6 @@ namespace BookBuddyAPI.Hubs.Notifications
             {
                 Debug.WriteLine($"OnConnectedAsync userId: {userGuid}");
                 // Automatically join the user to their personal group
-                //await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{userId}");
                 JoinUserGroup(userGuid);
             }
 
@@ -45,7 +43,6 @@ namespace BookBuddyAPI.Hubs.Notifications
 
             if (!string.IsNullOrEmpty(userGuid))
             {
-                //await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user_{userId}");
                 LeaveUserGroup(userGuid);
             }
 

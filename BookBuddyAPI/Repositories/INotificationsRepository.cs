@@ -7,6 +7,7 @@ namespace BookBuddyAPI.Repositories
         Task<List<Notification>> GetUserNotificationsAsync(Guid userId);
         Task<Notification> AddNotificationAsync(Notification notificationDomainModel);
         Task<Notification> DeleteNotificationAsync(Guid notificationId);
+        Task<Notification> UpdateNotificationAsync(Guid notificationId, Notification notificationDomainModel);
 
     }
 }
