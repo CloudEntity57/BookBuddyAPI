@@ -18,5 +18,9 @@ namespace BookBuddyAPI.Models.DTO
         public List<BookDTO>? WantToRead { get; set; }
         public List<UserDTO>? ReceivedBuddyRequests { get; set; }
         public List<UserDTO>? SentBuddyRequests { get; set; }
+
+        public List<ConversationMember>? ConversationMembers { get; set; } 
+        public List<Message>? Messages { get; set; } 
+        public List<MessageReaction>? MessageReactions { get; set; } 
     }
 }

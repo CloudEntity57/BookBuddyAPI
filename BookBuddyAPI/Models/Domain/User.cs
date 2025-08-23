@@ -23,5 +23,9 @@ namespace BookBuddyAPI.Models.Domain
         public List<BuddyRequest>? SentBuddyRequestsJoin { get; set; }
         public List<BuddyRequest>? ReceivedBuddyRequestsJoin { get; set; }
 
+        public ICollection<ConversationMember> ConversationMembers { get; set; } = new List<ConversationMember>();
+        public ICollection<Message> Messages { get; set; } = new List<Message>();
+        public ICollection<MessageReaction> MessageReactions { get; set; } = new List<MessageReaction>();
+
     }
 }

@@ -18,6 +18,10 @@ namespace BookBuddyAPI.Data
         public DbSet<BuddyRequest> BuddyRequest { get; set; }
         public DbSet<Buddy> Buddies { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<ConversationMember> ConversationMembers { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<MessageReaction> MessageReactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -63,6 +67,39 @@ namespace BookBuddyAPI.Data
                 .WithMany()
                 .HasForeignKey(b => b.UserBId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // Composite key for ConversationMember (many-to-many)
+            modelBuilder.Entity<ConversationMember>()
+                .HasKey(cm => new { cm.UserId, cm.ConversationId });
+
+            modelBuilder.Entity<ConversationMember>()
+                .HasOne(cm => cm.User)
+                .WithMany(u => u.ConversationMembers)
+                .HasForeignKey(cm => cm.UserId);
+
+            modelBuilder.Entity<ConversationMember>()
+                .HasOne(cm => cm.Conversation)
+                .WithMany(c => c.Members)
+                .HasForeignKey(cm => cm.ConversationId);
+
+            // One-to-many for Messages
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany(u => u.Messages)
+                .HasForeignKey(m => m.SenderId);
+
+            // One-to-many for MessageReactions
+            modelBuilder.Entity<MessageReaction>()
+                .HasOne(r => r.Message)
+                .WithMany(m => m.Reactions)
+                .HasForeignKey(r => r.MessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<MessageReaction>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.MessageReactions)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

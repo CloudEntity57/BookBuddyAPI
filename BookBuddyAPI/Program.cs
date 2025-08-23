@@ -73,6 +73,9 @@ builder.Services.AddScoped<IBookRepository, SQLBookRepository>();
 builder.Services.AddScoped<IBuddyRepository, SQLBuddyRepository>();
 builder.Services.AddScoped<INotificationsRepository, SQLNotificationsRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IMessageRepository, SQLMessageRepository>();
+builder.Services.AddScoped<IConversationRepository, SQLConversationRepository>();
+builder.Services.AddScoped<IConversationMemberRepository, SQLConversationMemberRepository>();
 
 // Add services
 builder.Services.AddScoped<INotificationService, NotificationService>();

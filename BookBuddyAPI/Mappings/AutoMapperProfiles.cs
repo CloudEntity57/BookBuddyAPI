@@ -15,6 +15,10 @@ namespace BookBuddyAPI.Mappings
             CreateMap<BuddyRequest, BuddyRequestDTO>().ReverseMap();
             CreateMap<Buddy, BuddyDTO>().ReverseMap();
             CreateMap<Notification, NotificationDTO>().ReverseMap();
+            CreateMap<Conversation, ConversationDTO>().ReverseMap();
+            CreateMap<ConversationMember, ConversationMemberDTO>().ReverseMap();
+            CreateMap<Message, MessageDTO>().ReverseMap();
+            CreateMap<MessageReaction, MessageReactionDTO>().ReverseMap();
         }
     }
 }
