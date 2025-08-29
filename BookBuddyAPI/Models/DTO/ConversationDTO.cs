@@ -15,6 +15,6 @@ namespace BookBuddyAPI.Models.DTO
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<MessageDTO> Messages { get; set; } = new List<MessageDTO>();
-        public ICollection<ConversationMember> Members { get; set; } = new List<ConversationMember>();
+        public ICollection<ConversationMemberDTO> Members { get; set; } = new List<ConversationMemberDTO>();
     }
 }

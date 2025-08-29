@@ -1,5 +1,6 @@
 ﻿using BookBuddyAPI.Data;
 using BookBuddyAPI.Models.Domain;
+using BookBuddyAPI.Models.DTO;
 using BookBuddyAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,6 +55,17 @@ namespace BookBuddyAPI.Repositories
             _context.Conversations.Remove(conversation);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Conversation?> GetPrivateConversationBetweenUsersAsync(Guid id1, Guid id2)
+        {
+            return await _context.Conversations
+            .Include(c => c.Members)
+            .Where(c => c.Members.Any(p => p.UserId == id1) &&
+                        c.Members.Any(p => p.UserId == id2) &&
+                        c.IsGroup == false)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
         }
     }
 }

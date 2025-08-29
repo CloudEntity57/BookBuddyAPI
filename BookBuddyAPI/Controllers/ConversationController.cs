@@ -82,5 +82,20 @@ namespace BookBuddyAPI.Controllers
 
             return NoContent();
         }
+
+        // GET CONVERSATION BETWEEN TWO USERS
+        [HttpGet("between/{userId1}/{userId2}")]
+        public async Task<IActionResult> GetConversationBetween(string userId1, string userId2)
+        {
+            var id1 = Guid.Parse(userId1);
+            var id2 = Guid.Parse(userId2);
+            var conversation = await conversationRepository.GetPrivateConversationBetweenUsersAsync(id1, id2);
+
+            if (conversation == null)
+                return NotFound();
+
+            var dto = mapper.Map<ConversationDTO>(conversation);
+            return Ok(dto);
+        }
     }
 }

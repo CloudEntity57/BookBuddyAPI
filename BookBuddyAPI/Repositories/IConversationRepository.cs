@@ -8,5 +8,7 @@ namespace BookBuddyAPI.Repositories
         Task<bool> DeleteConversationAsync(Guid id);
         Task<Conversation?> CreateConversationAsync(Conversation conversation);
         Task<Conversation?> UpdateConversationAsync(Conversation conversation);
+
+        Task<Conversation?> GetPrivateConversationBetweenUsersAsync(Guid id1, Guid id2);
     }
 }
