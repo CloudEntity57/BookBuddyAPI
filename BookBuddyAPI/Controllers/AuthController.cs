@@ -3,7 +3,6 @@ using BookBuddyAPI.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NZWalks.API.Models.DTO;
 
 namespace BookBuddyAPI.Controllers
 {
