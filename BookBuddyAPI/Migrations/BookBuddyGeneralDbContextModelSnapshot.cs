@@ -38,7 +38,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.Buddy", b =>
@@ -56,7 +56,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasIndex("UserBId");
 
-                    b.ToTable("Buddies");
+                    b.ToTable("Buddies", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.BuddyRequest", b =>
@@ -80,7 +80,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasIndex("PassiveUserId");
 
-                    b.ToTable("BuddyRequest");
+                    b.ToTable("BuddyRequest", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.Conversation", b =>
@@ -103,7 +103,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Conversations");
+                    b.ToTable("Conversations", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.ConversationMember", b =>
@@ -129,7 +129,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.ToTable("ConversationMembers");
+                    b.ToTable("ConversationMembers", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.Message", b =>
@@ -163,7 +163,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.MessageReaction", b =>
@@ -191,7 +191,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MessageReactions");
+                    b.ToTable("MessageReactions", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.Notification", b =>
@@ -223,7 +223,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
@@ -263,7 +263,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.UserBook", b =>
@@ -284,7 +284,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("UserBook");
+                    b.ToTable("UserBook", (string)null);
                 });
 
             modelBuilder.Entity("BookUser", b =>
@@ -299,7 +299,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasIndex("WantToReadId");
 
-                    b.ToTable("BookUser");
+                    b.ToTable("BookUser", (string)null);
                 });
 
             modelBuilder.Entity("UserUser", b =>
@@ -314,7 +314,7 @@ namespace BookBuddyAPI.Migrations
 
                     b.HasIndex("SentBuddyRequestsId");
 
-                    b.ToTable("UserUser");
+                    b.ToTable("UserUser", (string)null);
                 });
 
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.Buddy", b =>

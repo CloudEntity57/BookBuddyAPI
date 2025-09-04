@@ -9,18 +9,24 @@ namespace BookBuddyAPI.Repositories
     public class SQLConversationRepository : IConversationRepository
     {
         private readonly BookBuddyGeneralDbContext _context;
+        private readonly ILogger<SQLBookRepository> logger;
 
-        public SQLConversationRepository(BookBuddyGeneralDbContext context)
+        public SQLConversationRepository(BookBuddyGeneralDbContext context, ILogger<SQLBookRepository> logger)
         {
             _context = context;
+            this.logger = logger;
         }
 
         // GET: Conversation by Id
         public async Task<Conversation?> GetConversationAsync(Guid id)
         {
-            return await _context.Conversations
+            var conversation = await _context.Conversations
+                .Include(c => c.Messages)
                 .AsNoTracking() // Optimization for read-only queries
                 .FirstOrDefaultAsync(c => c.Id == id);
+
+            logger.LogInformation($"Loaded messages: {conversation.Messages.Count}");
+            return conversation;
         }
 
         // CREATE: Add new Conversation
@@ -64,6 +70,7 @@ namespace BookBuddyAPI.Repositories
             .Where(c => c.Members.Any(p => p.UserId == id1) &&
                         c.Members.Any(p => p.UserId == id2) &&
                         c.IsGroup == false)
+            .Include(c => c.Messages)
             .AsNoTracking()
             .FirstOrDefaultAsync();
         }
