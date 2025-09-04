@@ -1,4 +1,4 @@
-﻿using BookBuddyAPI.Hubs.Notifications;
+﻿using BookBuddyAPI.Hubs.AppHub;
 using BookBuddyAPI.Models.Domain;
 using BookBuddyAPI.Models.DTO;
 using Microsoft.AspNetCore.SignalR;
@@ -7,9 +7,9 @@ namespace BookBuddyAPI.Services
 {
     public class NotificationService : INotificationService
     {
-        private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly IHubContext<AppHub> _hubContext;
 
-        public NotificationService(IHubContext<NotificationHub> hubContext) { _hubContext = hubContext; }
+        public NotificationService(IHubContext<AppHub> hubContext) { _hubContext = hubContext; }
         public async Task NotifyBuddyRequestAsync(Guid recipientId, NotificationDTO notificationDTO)
         {
             //await _hubContext.Clients.User(recipientId.ToString())

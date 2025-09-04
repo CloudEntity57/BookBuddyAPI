@@ -2,6 +2,7 @@
 using BookBuddyAPI.Models.Domain;
 using BookBuddyAPI.Models.DTO;
 using BookBuddyAPI.Repositories;
+using BookBuddyAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,13 @@ namespace BookBuddyAPI.Controllers
 
         private readonly IMessageRepository _messageRepository;
         private readonly IMapper _mapper;
+        private readonly IMessageService messageService;
 
-        public MessageController(IMessageRepository messageRepository, IMapper mapper)
+        public MessageController(IMessageRepository messageRepository, IMapper mapper, IMessageService messageService)
         {
             _messageRepository = messageRepository;
             _mapper = mapper;
+            this.messageService = messageService;
         }
 
 
@@ -46,6 +49,10 @@ namespace BookBuddyAPI.Controllers
             var createdMessage = await _messageRepository.CreateMessageAsync(message);
 
             var resultDto = _mapper.Map<MessageDTO>(createdMessage);
+
+            // update via SignalR in real time:
+            await messageService.UpdateMessageAsync(resultDto);
+
             return Ok(resultDto);
         }
 

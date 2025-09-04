@@ -19,6 +19,7 @@ namespace BookBuddyAPI.Mappings
             CreateMap<Conversation, AddConversationDTO>().ReverseMap();
             CreateMap<ConversationMember, ConversationMemberDTO>().ReverseMap();
             CreateMap<ConversationMember, AddConversationMemberDTO>().ReverseMap();
+            CreateMap<Message, AddMessageDTO>().ReverseMap();
             CreateMap<Message, MessageDTO>().ReverseMap();
             CreateMap<MessageReaction, MessageReactionDTO>().ReverseMap();
         }

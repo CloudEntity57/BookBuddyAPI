@@ -1,5 +1,5 @@
 using BookBuddyAPI.Data;
-using BookBuddyAPI.Hubs.Notifications;
+using BookBuddyAPI.Hubs.AppHub;
 using BookBuddyAPI.Mappings;
 using BookBuddyAPI.Repositories;
 using BookBuddyAPI.Services;
@@ -80,6 +80,7 @@ builder.Services.AddScoped<IConversationMemberRepository, SQLConversationMemberR
 // Add services
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IBuddyRequestService, BuddyRequestService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 
 static async Task AddUserGuidClaim(TokenValidatedContext context, string userEmail)
@@ -142,6 +143,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 var accessToken = context.Request.Query["access_token"];
 
                 var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                Debug.WriteLine($"auth Header received: {authHeader}");
                 var path = context.HttpContext.Request.Path;
                 Debug.WriteLine($"OnMessageReceived - Path: {path}, Token present: {!string.IsNullOrEmpty(accessToken)}");
 
@@ -158,7 +160,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 // If the request is for SignalR hub
 
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/notifications"))
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/app"))
                 {
                     Debug.WriteLine($"attaching this token: {accessToken}");
                     context.Token = accessToken;
@@ -283,7 +285,7 @@ app.Use(async (context, next) =>
     Debug.WriteLine($"Method: {context.Request.Method}");
     Debug.WriteLine($"Query: {context.Request.QueryString}");
     Debug.WriteLine($"Headers: {string.Join(", ", context.Request.Headers.Select(h => $"{h.Key}={h.Value}"))}");
-    if (context.Request.Path.StartsWithSegments("/hubs/notifications"))
+    if (context.Request.Path.StartsWithSegments("/hubs/app"))
     {
         Console.WriteLine($"SignalR request intercepted:");
         Console.WriteLine($"Path: {context.Request.Path}");
@@ -308,6 +310,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-app.MapHub<NotificationHub>("hubs/notifications");
+app.MapHub<AppHub>("hubs/app");
 
 app.Run();

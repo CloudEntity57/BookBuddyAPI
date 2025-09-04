@@ -1,12 +1,13 @@
-﻿using BookBuddyAPI.Models.DTO;
+﻿using BookBuddyAPI.Models.Domain;
+using BookBuddyAPI.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Diagnostics;
 
-namespace BookBuddyAPI.Hubs.Notifications
+namespace BookBuddyAPI.Hubs.AppHub
 {
     [Authorize]
-    public class NotificationHub : Hub
+    public class AppHub : Hub
     {
         public async Task JoinUserGroup(string userId)
         {
@@ -16,6 +17,24 @@ namespace BookBuddyAPI.Hubs.Notifications
         public async Task LeaveUserGroup(string userId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user_{userId}");
+        }
+
+        // Called when a user opens a conversation
+        public async Task JoinConversation(string conversationId)
+        {
+            string groupName = $"Conversation_{conversationId}";
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+            // Optional: notify others the user joined
+            await Clients.Group(groupName).SendAsync("UserJoined", Context.UserIdentifier);
+            Debug.WriteLine($"Added user to {groupName}");
+        }
+
+        public async Task LeaveConversation(string conversationId)
+        {
+            string groupName = $"Conversation_{conversationId}";
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            Debug.WriteLine($"removed user from {groupName}");
         }
         public override async Task OnConnectedAsync()
         {
@@ -48,12 +67,6 @@ namespace BookBuddyAPI.Hubs.Notifications
 
             await base.OnDisconnectedAsync(exception);
         }
-        public async Task SendNotification(NotificationDTO notificationDTO)
-        {
-            var userId = Context.User.Claims.ToList();
-            //await Clients.User([recipientGuid.toString()])?.SendAsync("NewNotification", notificationDTO);
-            Debug.WriteLine($"Sending a notification with GUID: {userId}");
-            //await Clients.User(userId).SendAsync("NewNotification", notificationDTO);
-        }
+
     }
 }
