@@ -14,6 +14,7 @@ namespace BookBuddyAPI.Models.DTO
         public string? AvatarUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
+        public string? ProfileImageUrl { get; set; }
         //public List<BuddyDTO>? Buddies { get; set; }
         public List<BookDTO>? WantToRead { get; set; }
         public List<UserDTO>? ReceivedBuddyRequests { get; set; }

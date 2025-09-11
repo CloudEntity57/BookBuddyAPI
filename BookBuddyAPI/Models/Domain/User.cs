@@ -15,6 +15,8 @@ namespace BookBuddyAPI.Models.Domain
         public string? BookOfInterest { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
+        public byte[]? ProfileImage { get; set; }  // Will map to VARBINARY(MAX)
+        public string? ProfileImageMimeType { get; set; }
         public List<Book>? WantToRead { get; set; }
         public List<UserBook>? WantReadJoin { get; set; }
         //public List<Buddy> Buddies { get; set; }

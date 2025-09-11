@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using BookBuddyAPI.Models.DTO;
 using BookBuddyAPI.Models.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookBuddyAPI.Controllers
 {
@@ -36,7 +37,11 @@ namespace BookBuddyAPI.Controllers
                 return NotFound();
             }
             //return Ok(mapper.Map<UserDTO>(userDomainModel));
-            return Ok(mapper.Map<UserDTO>(userDomainModel));
+            var userDto = mapper.Map<UserDTO>(userDomainModel);
+            userDto.ProfileImageUrl = userDomainModel.ProfileImage != null
+                ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{userDomainModel.Id}/image"
+                : null;
+            return Ok(userDto);
         }
 
         [HttpGet]
@@ -51,7 +56,11 @@ namespace BookBuddyAPI.Controllers
                 return NotFound();
             }
             //return Ok(mapper.Map<UserDTO>(userDomainModel));
-            return Ok(mapper.Map<UserDTO>(userDomainModel));
+            var userDto = mapper.Map<UserDTO>(userDomainModel);
+            userDto.ProfileImageUrl = userDomainModel.ProfileImage != null
+                ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{userDomainModel.Id}/image"
+                : null;
+            return Ok(userDto);
         }
 
         [HttpPost]
@@ -61,6 +70,39 @@ namespace BookBuddyAPI.Controllers
             var userDomainModel = mapper.Map<User>(userDTO);
             userDomainModel = await repository.CreateAsync(userDomainModel);
             return Ok(mapper.Map<UserDTO>(userDomainModel));
+        }
+
+        [HttpPost]
+        [Route("upload-image/{id}")]
+        // POST: api/Users/upload-image/{id}
+        public async Task<IActionResult> UploadProfileImage(Guid id, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            try
+            {
+                await repository.SaveProfileIMage(id, file);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error saving profile image:{ex}");
+                return NotFound();
+            }
+
+            return Ok(new { message = "Profile image uploaded successfully. :)" });
+        }
+        [HttpGet]
+        [Route("profile-image/{id}")]
+        public async Task<IActionResult> GetProfileImage(Guid id)
+        {
+            var user = await repository.GetUserByIdAsync(id);
+
+            if (user == null || user.ProfileImage == null)
+                return NotFound();
+            //var profileImage = user.ProfileImage != null ? user.ProfileImage : [Convert.ToByte(255)];
+
+            return File(user.ProfileImage, user.ProfileImageMimeType ?? "image/png");
         }
     }
 }
