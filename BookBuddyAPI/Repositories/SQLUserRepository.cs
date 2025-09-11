@@ -36,6 +36,7 @@ namespace BookBuddyAPI.Repositories
                     UserName = u.UserName,
                     CreatedAt = u.CreatedAt,
                     LastLoginAt = u.LastLoginAt,
+                    ProfileImage = u.ProfileImage,
                     WantToRead = u.WantReadJoin.Select(ub => new
                     Book
                     {
@@ -154,6 +155,24 @@ namespace BookBuddyAPI.Repositories
             }
             //userDomainModel.WantToRead?.ForEach( wtr => wtr.Include("Book"))
             return userDomainModel;
+        }
+
+        public async Task SaveProfileIMage(Guid id, IFormFile file)
+        {
+            var user = await dbContext.Users.FindAsync(id);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
+            using (var ms = new MemoryStream())
+            {
+                await file.CopyToAsync(ms);
+                user.ProfileImage = ms.ToArray();
+                user.ProfileImageMimeType = file.ContentType;
+            }
+
+            dbContext.Entry(user).State = EntityState.Modified;
+            await dbContext.SaveChangesAsync();
         }
     }
 }

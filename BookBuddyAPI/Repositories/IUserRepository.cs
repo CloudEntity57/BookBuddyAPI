@@ -7,5 +7,6 @@ namespace BookBuddyAPI.Repositories
         Task<User?> GetUserByIdAsync(Guid id);
         Task<User?> GetUserByEmailAsync(string email);
         Task<User> CreateAsync(User user);
+        Task SaveProfileIMage(Guid id, IFormFile file);
     }
 }
