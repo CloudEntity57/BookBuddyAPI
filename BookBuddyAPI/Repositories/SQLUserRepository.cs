@@ -41,6 +41,7 @@ namespace BookBuddyAPI.Repositories
                     Book
                     {
                         Id = ub.BookId,
+                        ApiId = ub.ApiBookId,
                         Title = ub.Book.Title,
                         Author = ub.Book.Author,
                         UsersWantToRead = ub.Book.UserBookJoin.Select(ubj => new User
@@ -108,6 +109,7 @@ namespace BookBuddyAPI.Repositories
                     Book
                     {
                         Id = ub.BookId,
+                        ApiId = ub.ApiBookId,
                         Title = ub.Book.Title,
                         Author = ub.Book.Author,
                         UsersWantToRead = ub.Book.UserBookJoin.Select(ubj => new User

@@ -1,6 +1,7 @@
 ﻿using BookBuddyAPI.Data;
 using BookBuddyAPI.Models.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BookBuddyAPI.Repositories
 {
@@ -29,9 +30,9 @@ namespace BookBuddyAPI.Repositories
             return userBook;
         }
 
-        public async Task<UserBook?> DeleteUserBookAsync(Guid userId, Guid bookId)
+        public async Task<UserBook?> DeleteUserBookAsync(Guid userId, Guid bookId, BookType type)
         {
-            var existingUserBook = await dbContext.UserBook.FirstOrDefaultAsync(x => x.UserId == userId && x.BookId == bookId);
+            var existingUserBook = await dbContext.UserBook.FirstOrDefaultAsync(x => x.UserId == userId && x.BookId == bookId && x.BookType == type);
             if (existingUserBook == null)
             {
                 return null;
@@ -50,7 +51,7 @@ namespace BookBuddyAPI.Repositories
                     Id = b.Id,
                     Title = b.Title,
                     Author = b.Author,
-                    UsersWantToRead = b.UserBookJoin.Select(ubj => new User
+                    UsersWantToRead = b.UserBookJoin.Where(ubj => ubj.BookType == BookType.WantToRead).Select(ubj => new User
                     {
                         Id = ubj.User.Id,
                         FirstName = ubj.User.FirstName,
@@ -60,7 +61,7 @@ namespace BookBuddyAPI.Repositories
                         UserName = ubj.User.UserName,
                         CreatedAt = ubj.User.CreatedAt,
                         LastLoginAt = ubj.User.LastLoginAt
-                    }).ToList()
+                    }).ToList(),
                 }).FirstOrDefaultAsync(x => x.Author.ToLower() == author.ToLower() && x.Title.ToLower() == title.ToLower());
 
             if (bookDomainModel == null)
