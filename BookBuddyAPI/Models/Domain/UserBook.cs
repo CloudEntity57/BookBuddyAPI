@@ -4,9 +4,10 @@
     {
         public Guid UserId { get; set; }
         public Guid BookId { get; set; }
-
+        public string? ApiBookId { get; set; }
         public DateTime? DateAdded { get; set; }
         public string? Note {  get; set; }
+        public BookType? BookType { get; set; }
 
         // navigation properties
         public User? User { get; set; }
@@ -14,5 +15,12 @@
         public Book? Book { get; set; }
 
 
+    }
+
+    public enum BookType
+    {
+        WantToRead,
+        Read,
+        Favorite
     }
 }

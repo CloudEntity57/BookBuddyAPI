@@ -9,7 +9,7 @@ namespace BookBuddyAPI.Repositories
         Task<Book?> CreateAsync(Book? book);
         Task<Book?> UpdateAsync(Book? book);
         Task<UserBook> CreateUserBookAsync(UserBook userBook);
-        Task<UserBook?> DeleteUserBookAsync(Guid userId, Guid bookId);
+        Task<UserBook?> DeleteUserBookAsync(Guid userId, Guid bookId, BookType type);
 
     }
 }

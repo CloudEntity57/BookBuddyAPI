@@ -48,28 +48,29 @@ namespace BookBuddyAPI.Controllers
             return Ok(bookDomainModel);
         }
         [HttpPut]
-        [Route("{userId}/{bookId}")]
-        // PUT: api/Book/{userId}/{bookId}
-        public async Task<IActionResult> UpdateUserWantToRead([FromRoute] string userId, [FromRoute] string bookId)
+        [Route("want_to_read")]
+        // PUT: api/Book/want_to_read
+        public async Task<IActionResult> UpdateUserBook([FromBody] UserBook userBook)
         {
-            var userBookDto = new UserBook{
-                UserId = Guid.Parse(userId), 
-                BookId = Guid.Parse(bookId),
-                DateAdded = DateTime.UtcNow,
-                Note = "adding a new book - " + bookId
-            };
-            userBookDto = await repository.CreateUserBookAsync(userBookDto);
+            //var userBookDto = new UserBook{
+            //    UserId = Guid.Parse(userId), 
+            //    BookId = Guid.Parse(bookId),
+            //    DateAdded = DateTime.UtcNow,
+            //    Note = "adding a new book - " + bookId
+            //};
+            userBook.DateAdded = DateTime.UtcNow;
+            var userBookDto = await repository.CreateUserBookAsync(userBook);
             logger.LogInformation("New UserBook Added - " + userBookDto);
             return Ok(userBookDto);
         }
         [HttpDelete]
-        [Route("{userId}/{bookId}")]
-        // DELETE: api/Book/{userId}/{bookId}
+        [Route("want_to_read/{userId}/{bookId}")]
+        // DELETE: api/Book/want_to_read/{userId}/{bookId}
         public async Task<IActionResult> DeleteUserWantToRead([FromRoute] string userId, [FromRoute] string bookId)
         {
             var userGuid = Guid.Parse(userId);
             var bookGuid = Guid.Parse(bookId);
-            var deletedUserBookDomainModel = await repository.DeleteUserBookAsync(userGuid, bookGuid);
+            var deletedUserBookDomainModel = await repository.DeleteUserBookAsync(userGuid, bookGuid, BookType.WantToRead);
             if(deletedUserBookDomainModel == null)
             {
                 return NotFound();
