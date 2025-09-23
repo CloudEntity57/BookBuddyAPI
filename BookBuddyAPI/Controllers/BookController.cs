@@ -48,7 +48,7 @@ namespace BookBuddyAPI.Controllers
             return Ok(bookDomainModel);
         }
         [HttpPut]
-        [Route("want_to_read")]
+        [Route("read_status")]
         // PUT: api/Book/want_to_read
         public async Task<IActionResult> UpdateUserBook([FromBody] UserBook userBook)
         {
@@ -72,6 +72,20 @@ namespace BookBuddyAPI.Controllers
             var bookGuid = Guid.Parse(bookId);
             var deletedUserBookDomainModel = await repository.DeleteUserBookAsync(userGuid, bookGuid, BookType.WantToRead);
             if(deletedUserBookDomainModel == null)
+            {
+                return NotFound();
+            }
+            return Ok(mapper.Map<UserBookDTO>(deletedUserBookDomainModel));
+        }
+        [HttpDelete]
+        [Route("has_read/{userId}/{bookId}")]
+        // DELETE: api/Book/want_to_read/{userId}/{bookId}
+        public async Task<IActionResult> DeleteUserHasRead([FromRoute] string userId, [FromRoute] string bookId)
+        {
+            var userGuid = Guid.Parse(userId);
+            var bookGuid = Guid.Parse(bookId);
+            var deletedUserBookDomainModel = await repository.DeleteUserBookAsync(userGuid, bookGuid, BookType.Read);
+            if (deletedUserBookDomainModel == null)
             {
                 return NotFound();
             }

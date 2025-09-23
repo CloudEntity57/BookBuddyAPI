@@ -7,7 +7,10 @@ namespace BookBuddyAPI.Mappings
     {
         public AutoMapperProfiles()
         {
-            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<User, UserDTO>()
+                //.ForMember(dest => dest.WantToRead, opt => opt.MapFrom(src => src.WantToRead))
+                //.ForMember(dest => dest.HaveRead, opt => opt.MapFrom(src => src.HaveRead))
+                .ReverseMap();
             CreateMap<User, AddUserDTO>().ReverseMap();
             CreateMap<UserBook, UserBookDTO>().ReverseMap();
             CreateMap<Book, BookDTO>().ReverseMap();

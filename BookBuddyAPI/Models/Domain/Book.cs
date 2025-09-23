@@ -10,7 +10,8 @@ namespace BookBuddyAPI.Models.Domain
         [NotMapped]
         public string ApiId { get; set; }
         public string Title { get; set; }
-        public string Author { get; set; } 
+        public string Author { get; set; }
+        [NotMapped]
         public List<User>? UsersWantToRead { get; set; }
         public List<UserBook>? UserBookJoin {  get; set; }
 

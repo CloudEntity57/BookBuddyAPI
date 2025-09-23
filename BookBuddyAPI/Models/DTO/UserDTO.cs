@@ -17,6 +17,8 @@ namespace BookBuddyAPI.Models.DTO
         public string? ProfileImageUrl { get; set; }
         //public List<BuddyDTO>? Buddies { get; set; }
         public List<BookDTO>? WantToRead { get; set; }
+        public List<BookDTO>? HaveRead { get; set; }
+        //public List<BookDTO>? HaveRead { get; set; }
         public List<UserDTO>? ReceivedBuddyRequests { get; set; }
         public List<UserDTO>? SentBuddyRequests { get; set; }
 

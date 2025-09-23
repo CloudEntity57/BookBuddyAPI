@@ -21,6 +21,7 @@
     {
         WantToRead,
         Read,
-        Favorite
+        Favorite,
+        Reading
     }
 }
