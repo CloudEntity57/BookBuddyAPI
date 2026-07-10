@@ -8,7 +8,7 @@ namespace BookBuddyAPI.Models.DTO
         public Guid UserId { get; set; }
         public Guid BookId { get; set; }
         public string? ApiBookId { get; set; }
-        public string? BookType { get; set; }
+        public BookType? BookType { get; set; }
 
         public DateTime DateAdded { get; set; }
         public string? Note { get; set; }

@@ -219,7 +219,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Allow Development Calls", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(["http://localhost:4200", "http://localhost:4000"])
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
