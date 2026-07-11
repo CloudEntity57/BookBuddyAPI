@@ -299,21 +299,6 @@ namespace BookBuddyAPI.Migrations
                     b.ToTable("UserBook");
                 });
 
-            modelBuilder.Entity("BookUser", b =>
-                {
-                    b.Property<Guid>("UsersWantToReadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("WantToReadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UsersWantToReadId", "WantToReadId");
-
-                    b.HasIndex("WantToReadId");
-
-                    b.ToTable("BookUser");
-                });
-
             modelBuilder.Entity("UserUser", b =>
                 {
                     b.Property<Guid>("ReceivedBuddyRequestsId")
@@ -441,21 +426,6 @@ namespace BookBuddyAPI.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("BookUser", b =>
-                {
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersWantToReadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookBuddyAPI.Models.Domain.Book", null)
-                        .WithMany()
-                        .HasForeignKey("WantToReadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("UserUser", b =>

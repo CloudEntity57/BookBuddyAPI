@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookBuddyAPI.Migrations
 {
     [DbContext(typeof(BookBuddyGeneralDbContext))]
-    [Migration("20250724044053_Notification and Buddy tables 0723")]
-    partial class NotificationandBuddytables0723
+    [Migration("20260711000716_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -86,6 +86,117 @@ namespace BookBuddyAPI.Migrations
                     b.ToTable("BuddyRequest");
                 });
 
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsGroup")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Conversations");
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.ConversationMember", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "ConversationId");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("ConversationMembers");
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AttachmentUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsEdited")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.MessageReaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Emoji")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ReactedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MessageReactions");
+                });
+
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -146,6 +257,12 @@ namespace BookBuddyAPI.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("ProfileImage")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("ProfileImageMimeType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserMessage")
                         .HasColumnType("nvarchar(max)");
 
@@ -166,6 +283,12 @@ namespace BookBuddyAPI.Migrations
                     b.Property<Guid>("BookId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ApiBookId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("BookType")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("DateAdded")
                         .HasColumnType("datetime2");
 
@@ -177,21 +300,6 @@ namespace BookBuddyAPI.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("UserBook");
-                });
-
-            modelBuilder.Entity("BookUser", b =>
-                {
-                    b.Property<Guid>("UsersWantToReadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("WantToReadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UsersWantToReadId", "WantToReadId");
-
-                    b.HasIndex("WantToReadId");
-
-                    b.ToTable("BookUser");
                 });
 
             modelBuilder.Entity("UserUser", b =>
@@ -247,6 +355,63 @@ namespace BookBuddyAPI.Migrations
                     b.Navigation("PassiveUser");
                 });
 
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.ConversationMember", b =>
+                {
+                    b.HasOne("BookBuddyAPI.Models.Domain.Conversation", "Conversation")
+                        .WithMany("Members")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookBuddyAPI.Models.Domain.User", "User")
+                        .WithMany("ConversationMembers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Message", b =>
+                {
+                    b.HasOne("BookBuddyAPI.Models.Domain.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookBuddyAPI.Models.Domain.User", "Sender")
+                        .WithMany("Messages")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.MessageReaction", b =>
+                {
+                    b.HasOne("BookBuddyAPI.Models.Domain.Message", "Message")
+                        .WithMany("Reactions")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookBuddyAPI.Models.Domain.User", "User")
+                        .WithMany("MessageReactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.UserBook", b =>
                 {
                     b.HasOne("BookBuddyAPI.Models.Domain.Book", "Book")
@@ -264,21 +429,6 @@ namespace BookBuddyAPI.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("BookUser", b =>
-                {
-                    b.HasOne("BookBuddyAPI.Models.Domain.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersWantToReadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookBuddyAPI.Models.Domain.Book", null)
-                        .WithMany()
-                        .HasForeignKey("WantToReadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("UserUser", b =>
@@ -301,8 +451,26 @@ namespace BookBuddyAPI.Migrations
                     b.Navigation("UserBookJoin");
                 });
 
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Conversation", b =>
+                {
+                    b.Navigation("Members");
+
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.Message", b =>
+                {
+                    b.Navigation("Reactions");
+                });
+
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
                 {
+                    b.Navigation("ConversationMembers");
+
+                    b.Navigation("MessageReactions");
+
+                    b.Navigation("Messages");
+
                     b.Navigation("ReceivedBuddyRequestsJoin");
 
                     b.Navigation("SentBuddyRequestsJoin");
