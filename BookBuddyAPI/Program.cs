@@ -219,7 +219,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Allow Development Calls", policy =>
     {
-        policy.WithOrigins(["http://localhost:4200", "http://localhost:4000"])
+        policy.WithOrigins([
+            "http://localhost:4200", 
+            "http://localhost:4000", 
+            "http://bookbuddy-bucket-464788833046-us-east-2-an.s3-website.us-east-2.amazonaws.com"
+        ])
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
@@ -261,7 +265,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if(!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors("Allow Development Calls");
 
 
