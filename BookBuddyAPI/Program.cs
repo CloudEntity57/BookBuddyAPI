@@ -53,9 +53,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 // Configure DbContext
 
+var connectionString = builder.Configuration.GetConnectionString("BookBuddyGeneralConnectionString");
+Console.WriteLine($"Connection string exists: {!string.IsNullOrEmpty(connectionString)}");
+
 builder.Services.AddDbContext<BookBuddyGeneralDbContext>(options =>
 options.UseSqlServer(
-    builder.Configuration.GetConnectionString("BookBuddyGeneralConnectionString"))
+    connectionString)
 );
 
 builder.Services.AddDbContext<BookBuddyAuthDbContext>(options =>
@@ -255,6 +258,15 @@ var app = builder.Build();
 //    Console.WriteLine($"Query string: {query}");
 //    await next();
 //});
+
+// Migrate latest DB context on startup:
+
+using var scope = app.Services.CreateScope();
+
+var db = scope.ServiceProvider
+    .GetRequiredService<BookBuddyGeneralDbContext>();
+
+db.Database.Migrate();
 
 
 
