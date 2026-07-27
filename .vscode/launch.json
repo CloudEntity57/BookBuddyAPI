@@ -1,0 +1,55 @@
+// {
+//   "version": "0.2.0",
+//   "configurations": [
+//     {
+//       "name": ".NET Core Launch (Web API)",
+//       "type": "dotnet",
+//       "request": "launch",
+//       "projectPath": "${workspaceFolder}/BookBuddyAPI.csproj",
+//       "launchBrowser": {
+//         "enabled": true,
+//         "args": "${auto-launch-url}",
+//         "windows": {
+//           "command": "cmd.exe",
+//           "args": "/c start ${auto-launch-url}"
+//         },
+//         "osx": {
+//           "command": "open"
+//         }
+//       },
+//       "env": {
+//         "ASPNETCORE_ENVIRONMENT": "Development"
+//       },
+//       "sourceFileMap": {
+//         "/Views": "${workspaceFolder}/Views"
+//       }
+//     }
+//   ]
+// }
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Core Launch (API)",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/BookBuddyAPI/bin/Debug/net8.0/BookBuddyAPI.dll",
+      "cwd": "${workspaceFolder}/BookBuddyAPI",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "launchBrowser": {
+        "enabled": true,
+        "args": "${auto-launch-url}",
+        "windows": {
+          "command": "cmd.exe",
+          "args": "/c start ${auto-launch-url}"
+        },
+        "osx": {
+          "command": "open"
+        }
+      },
+    }
+  ]
+}
