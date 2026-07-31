@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using System.Diagnostics;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using BookbuddyAPI.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,22 +72,37 @@ options.UseSqlServer(
 // Configure AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
+// Bind the secrets section to settings class
+builder.Services.Configure<OAuthSettings>(
+    builder.Configuration.GetSection("Authentication:Google"));
+
+
 // Add repositories
 
 builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
 builder.Services.AddScoped<IBookRepository, SQLBookRepository>();
 builder.Services.AddScoped<IBuddyRepository, SQLBuddyRepository>();
 builder.Services.AddScoped<INotificationsRepository, SQLNotificationsRepository>();
-builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+// builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IMessageRepository, SQLMessageRepository>();
 builder.Services.AddScoped<IConversationRepository, SQLConversationRepository>();
 builder.Services.AddScoped<IConversationMemberRepository, SQLConversationMemberRepository>();
+builder.Services.AddScoped<IExternalLoginRepository, SQLExternalLoginRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 // Add services
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IBuddyRequestService, BuddyRequestService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
+// Register custom OAuth service
+builder.Services.AddScoped<IExternalAuthService, GoogleAuthService>();
+
+//For the current single-server EC2 deployment, register an in-memory implementation of IDistributedCache:
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddHttpClient<IGoogleOAuthClient, GoogleOAuthClient>();
 
 static async Task AddUserGuidClaim(TokenValidatedContext context, string userEmail)
 {
@@ -109,108 +127,30 @@ static async Task AddUserGuidClaim(TokenValidatedContext context, string userEma
     }
 }
 
+// 
 
 // add authentication
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        // Configure for OIDC/OAuth2 provider
-        options.Authority = builder.Configuration["OAuth:Authority"]; // e.g., "https://accounts.google.com"
-        options.Audience = builder.Configuration["OAuth:ClientId"]; // Your OAuth client ID
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            //ValidIssuer = "https://accounts.google.com",
-            //ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            //ValidAudience = "921071488707-kusrp5jrol9g7uekdgqbseqk6c5o8p07.apps.googleusercontent.com",
-            //ValidAudience = builder.Configuration["Jwt:Audience"],
-            //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-            // Prevent automatic claim mapping
-            ClockSkew = TimeSpan.FromMinutes(5),
-            RequireSignedTokens = false,
-            NameClaimType = "name",
-            RoleClaimType = "role"
-        };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
+        options.TokenValidationParameters =
+            new TokenValidationParameters
             {
-                Debug.WriteLine("OnMessageReceived Called");
-
-                // This allows JWT to be passed via query string for WebSocket connections
-                var accessToken = context.Request.Query["access_token"];
-
-                var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
-                Debug.WriteLine($"auth Header received: {authHeader}");
-                var path = context.HttpContext.Request.Path;
-                Debug.WriteLine($"OnMessageReceived - Path: {path}, Token present: {!string.IsNullOrEmpty(accessToken)}");
-
-                if (authHeader != null)
-                {
-                    accessToken = authHeader.Substring("Bearer ".Length).Trim();
-                }
-
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    Debug.WriteLine($"our negotiate query : {authHeader} and access token: {accessToken}");
-                }
-
-
-                // If the request is for SignalR hub
-
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/app"))
-                {
-                    Debug.WriteLine($"attaching this token: {accessToken}");
-                    context.Token = accessToken;
-                    Debug.WriteLine("Token set for SignalR connection");
-                }
-
-
-                return Task.CompletedTask;
-            },
-            OnTokenValidated = async context =>
-            {
-                Debug.WriteLine($"On Token Validated Called");
-
-                // Debug: Log all claims to see what's available
-                var claims = context.Principal?.Claims?.ToList();
-
-                if (claims != null)
-                {
-                    foreach (var claim in claims)
-                    {
-                        Debug.WriteLine($"Claim Type: {claim.Type}, Value: {claim.Value}");
-                    }
-                }
-
-                // Utilize user email to find the existing user and create a GUID claim for SignalR connectivity:
-                string userEmail = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-                if(userEmail != null)
-                {
-                    await AddUserGuidClaim(context, userEmail);
-                }
-
-
-                //return Task.CompletedTask;
-            },
-            OnAuthenticationFailed = context =>
-            {
-                Debug.WriteLine($"JWT Authentication failed: {context.Exception?.Message}");
-                Debug.WriteLine($"JWT Authentication failed details: {context.Exception}");
-                return Task.CompletedTask;
-            },
-            OnChallenge = context =>
-            {
-                Debug.WriteLine($"JWT Challenge: {context.Error}, {context.ErrorDescription}");
-                return Task.CompletedTask;
-            }
-        };
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+                    )
+            };
     });
+
 
 // add SignalR to services:
 
@@ -277,10 +217,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-if(!app.Environment.IsDevelopment())
-{
+// if(!app.Environment.IsDevelopment())
+// {
     app.UseHttpsRedirection();
-}
+// }
 app.UseCors("Allow Development Calls");
 
 
@@ -322,7 +262,7 @@ app.Use(async (context, next) =>
     await next();
 
 });
-//app.UseAuthentication();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
