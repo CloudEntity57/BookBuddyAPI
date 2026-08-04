@@ -149,6 +149,42 @@ builder.Services
                         Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
                     )
             };
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var token = context.Request.Query["access_token"];
+
+                    Console.WriteLine($"Path: {context.HttpContext.Request.Path}");
+                    Console.WriteLine($"Access token in query: {!string.IsNullOrEmpty(token)}");
+
+                    if (!string.IsNullOrEmpty(token) &&
+                        context.HttpContext.Request.Path.StartsWithSegments("/hubs/app"))
+                    {
+                        context.Token = token;
+                    }
+
+                    return Task.CompletedTask;
+                },
+
+                OnTokenValidated = context =>
+                {
+                    Console.WriteLine("JWT validated successfully.");
+
+                    foreach (var claim in context.Principal!.Claims)
+                    {
+                        Console.WriteLine($"{claim.Type}: {claim.Value}");
+                    }
+
+                    return Task.CompletedTask;
+                },
+
+                OnAuthenticationFailed = context =>
+                {
+                    Console.WriteLine($"Authentication failed: {context.Exception}");
+                    return Task.CompletedTask;
+                }
+            };
     });
 
 
@@ -217,10 +253,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// if(!app.Environment.IsDevelopment())
-// {
+if(!app.Environment.IsDevelopment())
+{
     app.UseHttpsRedirection();
-// }
+}
 app.UseCors("Allow Development Calls");
 
 
@@ -228,22 +264,22 @@ app.UseCors("Allow Development Calls");
 // get user GUID from request headers and add a claim to use in targeted SignalR messages and notifications:
 app.Use(async (context, next) =>
 {
-    //if (context.Request.Headers.TryGetValue("X-User-Guid", out var userGuid))
-    //{
-    //    var claims = new List<Claim> {
-    //        new Claim("user_guid", userGuid)
-    //    };
+    if (context.Request.Headers.TryGetValue("X-User-Guid", out var userGuid))
+    {
+       var claims = new List<Claim> {
+           new Claim("user_guid", userGuid)
+       };
 
-    //    Debug.WriteLine($"User guid: {userGuid} claims: {claims}");
+       Debug.WriteLine($"User guid: {userGuid} claims: {claims}");
 
-    //    var identity = new ClaimsIdentity(claims, "Header");
-    //    context.User.AddIdentity(identity);
-    //}
-    Debug.WriteLine($"SignalR request intercepted:");
-    Debug.WriteLine($"Path: {context.Request.Path}");
-    Debug.WriteLine($"Method: {context.Request.Method}");
-    Debug.WriteLine($"Query: {context.Request.QueryString}");
-    Debug.WriteLine($"Headers: {string.Join(", ", context.Request.Headers.Select(h => $"{h.Key}={h.Value}"))}");
+       var identity = new ClaimsIdentity(claims, "Header");
+       context.User.AddIdentity(identity);
+    }
+    // Debug.WriteLine($"SignalR request intercepted:");
+    // Debug.WriteLine($"Path: {context.Request.Path}");
+    // Debug.WriteLine($"Method: {context.Request.Method}");
+    // Debug.WriteLine($"Query: {context.Request.QueryString}");
+    // Debug.WriteLine($"Headers: {string.Join(", ", context.Request.Headers.Select(h => $"{h.Key}={h.Value}"))}");
     if (context.Request.Path.StartsWithSegments("/hubs/app"))
     {
         Console.WriteLine($"SignalR request intercepted:");
@@ -253,7 +289,7 @@ app.Use(async (context, next) =>
         Console.WriteLine($"Headers: {string.Join(", ", context.Request.Headers.Select(h => $"{h.Key}={h.Value}"))}");
 
         var token = context.Request.Query["access_token"].FirstOrDefault();
-        Console.WriteLine($"Access token in query: {!string.IsNullOrEmpty(token)}");
+        Console.WriteLine($"Access token in query: {!string.IsNullOrEmpty(token)} - {token}");
 
         var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
         Console.WriteLine($"Authorization header: {authHeader}");

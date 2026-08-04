@@ -100,7 +100,8 @@ namespace BookBuddyAPI.Services
                 Email = googleUser.Email,
                 UserName = googleUser.Name,
                 AvatarUrl = googleUser.Picture,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Roles = new List<string> { "User" }
             };
 
             await _userRepository.CreateAsync(user);
