@@ -18,6 +18,7 @@ namespace BookBuddyAPI.Models.Domain
         public DateTime? LastLoginAt { get; set; }
         public byte[]? ProfileImage { get; set; }  // Will map to VARBINARY(MAX)
         public string? ProfileImageMimeType { get; set; }
+        public List<string> Roles { get; set; } = new List<string> { "User" };
         public List<UserBook>? WantReadJoin { get; set; }
         [NotMapped]
         public List<Book>? WantToRead { get; set; }

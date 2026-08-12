@@ -22,6 +22,7 @@ namespace BookBuddyAPI.Data
         public DbSet<ConversationMember> ConversationMembers { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<MessageReaction> MessageReactions { get; set; }
+        public DbSet<ExternalLogin> ExternalLogins { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

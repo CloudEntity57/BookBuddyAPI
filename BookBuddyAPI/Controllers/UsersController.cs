@@ -5,6 +5,8 @@ using AutoMapper;
 using BookBuddyAPI.Models.DTO;
 using BookBuddyAPI.Models.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookBuddyAPI.Controllers
 {
@@ -24,9 +26,27 @@ namespace BookBuddyAPI.Controllers
             this.logger = logger;
         }
 
+        [HttpGet]
+        [Authorize(Roles = "User,Admin")]
+        [Route("current")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (email == null)
+            {
+                return NotFound();
+            }
+            var userDomainModel = await repository.GetUserByEmailAsync(email);
+            //return Ok(mapper.Map<UserDTO>(userDomainModel));
+            var userDto = mapper.Map<UserDTO>(userDomainModel);
+            return Ok(userDto);
+        }
+
 
 
         [HttpGet]
+        [Authorize(Roles = "User,Admin")]
         [Route("email/{email}")]
         public async Task<IActionResult> GetUserByEmail([FromRoute] string email)
         {
