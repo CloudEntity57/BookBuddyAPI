@@ -55,6 +55,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
+            -f BookBuddyAPI/Dockerfile \
             -t 464788833046.dkr.ecr.us-east-2.amazonaws.com/bookbuddy/bookbuddy-api:latest \
             .
 
