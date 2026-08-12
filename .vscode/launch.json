@@ -48,7 +48,10 @@
         },
         "osx": {
           "command": "open"
-        }
+        },
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development"
+        },      
       },
     }
   ]

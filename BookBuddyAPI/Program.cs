@@ -57,7 +57,7 @@ builder.Services.AddSwaggerGen(options =>
 // Configure DbContext
 
 var connectionString = builder.Configuration.GetConnectionString("BookBuddyGeneralConnectionString");
-Console.WriteLine($"Connection string exists: {!string.IsNullOrEmpty(connectionString)}");
+Console.WriteLine($"Connection string exists: {!string.IsNullOrEmpty(connectionString)} - {connectionString}");
 
 builder.Services.AddDbContext<BookBuddyGeneralDbContext>(options =>
 options.UseSqlServer(
@@ -201,7 +201,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins([
             "http://localhost:4200", 
             "http://localhost:4000", 
-            "http://bookbuddy-bucket-464788833046-us-east-2-an.s3-website.us-east-2.amazonaws.com"
+            "http://bookbuddy-bucket-464788833046-us-east-2-an.s3-website.us-east-2.amazonaws.com",
+            "https://joinbookbuddy.com"
         ])
         .AllowAnyHeader()
         .AllowAnyMethod()
@@ -239,8 +240,12 @@ var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
 
+
 var db = scope.ServiceProvider
     .GetRequiredService<BookBuddyGeneralDbContext>();
+var dbConnectionString = db.Database.GetConnectionString();
+
+Console.WriteLine($"DB connection: {dbConnectionString}");
 
 db.Database.Migrate();
 
@@ -255,6 +260,7 @@ if (app.Environment.IsDevelopment())
 
 if(!app.Environment.IsDevelopment())
 {
+    app.UseForwardedHeaders();
     app.UseHttpsRedirection();
 }
 app.UseCors("Allow Development Calls");

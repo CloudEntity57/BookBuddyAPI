@@ -1,0 +1,80 @@
+name: Deploy BookBuddy API
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      # Add this once your test project exists
+      # - name: Test
+      #   run: dotnet test --configuration Release --no-build
+
+  deploy:
+    name: Build Docker Image and Deploy
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_API_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t 464788833046.dkr.ecr.us-east-2.amazonaws.com/bookbuddy/bookbuddy-api:latest \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push \
+            464788833046.dkr.ecr.us-east-2.amazonaws.com/bookbuddy/bookbuddy-api:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/bookbuddy-deploy
+
+            aws ecr get-login-password --region us-east-2 | \
+              docker login --username AWS --password-stdin \
+              464788833046.dkr.ecr.us-east-2.amazonaws.com
+
+            docker compose pull api
+            docker compose up -d api
