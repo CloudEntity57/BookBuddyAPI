@@ -245,7 +245,7 @@ var db = scope.ServiceProvider
     .GetRequiredService<BookBuddyGeneralDbContext>();
 var dbConnectionString = db.Database.GetConnectionString();
 
-Console.WriteLine($"DB connection: {dbConnectionString}");
+// Console.WriteLine($"DB connection: {dbConnectionString}");
 
 db.Database.Migrate();
 
