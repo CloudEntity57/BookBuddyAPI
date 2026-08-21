@@ -95,6 +95,7 @@ namespace BookBuddyAPI.Controllers
         [HttpPost]
         [Route("upload-image/{id}")]
         // POST: api/Users/upload-image/{id}
+        // saves a user profile picture
         public async Task<IActionResult> UploadProfileImage(Guid id, IFormFile file)
         {
             if (file == null || file.Length == 0)

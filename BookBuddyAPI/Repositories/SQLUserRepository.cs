@@ -121,6 +121,7 @@ Book
                     LastName = u.LastName,
                     Email = u.Email,
                     AvatarUrl = u.AvatarUrl,
+                    ProfileImage = u.ProfileImage,
                     UserName = u.UserName,
                     CreatedAt = u.CreatedAt,
                     LastLoginAt = u.LastLoginAt,
