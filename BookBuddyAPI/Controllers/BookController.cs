@@ -64,6 +64,36 @@ namespace BookBuddyAPI.Controllers
             return Ok(userBookDto);
         }
         [HttpDelete]
+        [Route("currently_reading/{userId}/{bookId}")]
+        // DELETE: api/Book/want_to_read/{userId}/{bookId}
+        public async Task<IActionResult> DeleteUserCurrentlyReading([FromRoute] string userId, [FromRoute] string bookId)
+        {
+            var userGuid = Guid.Parse(userId);
+            var bookGuid = Guid.Parse(bookId);
+            var deletedUserBookDomainModel = await repository.DeleteUserBookAsync(userGuid, bookGuid, BookType.Reading);
+            if(deletedUserBookDomainModel == null)
+            {
+                return NotFound();
+            }
+            return Ok(mapper.Map<UserBookDTO>(deletedUserBookDomainModel));
+        }
+        [HttpDelete]
+        [Route("did_not_finish/{userId}/{bookId}")]
+        // DELETE: api/Book/want_to_read/{userId}/{bookId}
+        public async Task<IActionResult> DeleteUserDidNotFinish([FromRoute] string userId, [FromRoute] string bookId)
+        {
+            var userGuid = Guid.Parse(userId);
+            var bookGuid = Guid.Parse(bookId);
+            var deletedUserBookDomainModel = await repository.DeleteUserBookAsync(userGuid, bookGuid, BookType.DNF);
+            if(deletedUserBookDomainModel == null)
+            {
+                return NotFound();
+            }
+            return Ok(mapper.Map<UserBookDTO>(deletedUserBookDomainModel));
+        }
+
+
+        [HttpDelete]
         [Route("want_to_read/{userId}/{bookId}")]
         // DELETE: api/Book/want_to_read/{userId}/{bookId}
         public async Task<IActionResult> DeleteUserWantToRead([FromRoute] string userId, [FromRoute] string bookId)

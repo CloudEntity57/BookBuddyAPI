@@ -75,6 +75,45 @@ Book
                             LastLoginAt = ubj.User.LastLoginAt
                         }).Where(ubj => ubj.Id != u.Id).ToList()
                     }).ToList(),
+                    CurrentlyReading = u.WantReadJoin.Where(wrj => wrj.BookType == BookType.Reading).Select(ub => new
+                    Book
+                    {
+                        Id = ub.BookId,
+                        ApiId = ub.ApiBookId,
+                        Title = ub.Book.Title,
+                        Author = ub.Book.Author,
+                        UsersWantToRead = ub.Book.UserBookJoin.Select(ubj => new User
+                        {
+                            Id = ubj.User.Id,
+                            FirstName = ubj.User.FirstName,
+                            LastName = ubj.User.LastName,
+                            Email = ubj.User.Email,
+                            AvatarUrl = ubj.User.AvatarUrl,
+                            UserName = ubj.User.UserName,
+                            CreatedAt = ubj.User.CreatedAt,
+                            LastLoginAt = ubj.User.LastLoginAt
+                        }).Where(ubj => ubj.Id != u.Id).ToList()
+                    }).ToList(),
+                    DidNotFinish = u.WantReadJoin.Where(wrj => wrj.BookType == BookType.DNF).Select(ub => new
+                    Book
+                    {
+                        Id = ub.BookId,
+                        ApiId = ub.ApiBookId,
+                        Title = ub.Book.Title,
+                        Author = ub.Book.Author,
+                        UsersWantToRead = ub.Book.UserBookJoin.Select(ubj => new User
+                        {
+                            Id = ubj.User.Id,
+                            FirstName = ubj.User.FirstName,
+                            LastName = ubj.User.LastName,
+                            Email = ubj.User.Email,
+                            AvatarUrl = ubj.User.AvatarUrl,
+                            UserName = ubj.User.UserName,
+                            CreatedAt = ubj.User.CreatedAt,
+                            LastLoginAt = ubj.User.LastLoginAt
+                        }).Where(ubj => ubj.Id != u.Id).ToList()
+                    }).ToList(),
+
                     ReceivedBuddyRequests = u.ReceivedBuddyRequestsJoin != null ? u.ReceivedBuddyRequestsJoin.Select(rb => new User
                     {
                         Id = rb.ActiveUserId,
@@ -145,6 +184,44 @@ Book
                         }).Where(ubj => ubj.Id != u.Id).ToList()
                     }).ToList(),
                     HaveRead = u.WantReadJoin.Where(wrj => wrj.BookType == BookType.Read).Select(ub => new
+                    Book
+                    {
+                        Id = ub.BookId,
+                        ApiId = ub.ApiBookId,
+                        Title = ub.Book.Title,
+                        Author = ub.Book.Author,
+                        UsersWantToRead = ub.Book.UserBookJoin.Select(ubj => new User
+                        {
+                            Id = ubj.User.Id,
+                            FirstName = ubj.User.FirstName,
+                            LastName = ubj.User.LastName,
+                            Email = ubj.User.Email,
+                            AvatarUrl = ubj.User.AvatarUrl,
+                            UserName = ubj.User.UserName,
+                            CreatedAt = ubj.User.CreatedAt,
+                            LastLoginAt = ubj.User.LastLoginAt
+                        }).Where(ubj => ubj.Id != u.Id).ToList()
+                    }).ToList(),
+                    CurrentlyReading = u.WantReadJoin.Where(wrj => wrj.BookType == BookType.Reading).Select(ub => new
+                    Book
+                    {
+                        Id = ub.BookId,
+                        ApiId = ub.ApiBookId,
+                        Title = ub.Book.Title,
+                        Author = ub.Book.Author,
+                        UsersWantToRead = ub.Book.UserBookJoin.Select(ubj => new User
+                        {
+                            Id = ubj.User.Id,
+                            FirstName = ubj.User.FirstName,
+                            LastName = ubj.User.LastName,
+                            Email = ubj.User.Email,
+                            AvatarUrl = ubj.User.AvatarUrl,
+                            UserName = ubj.User.UserName,
+                            CreatedAt = ubj.User.CreatedAt,
+                            LastLoginAt = ubj.User.LastLoginAt
+                        }).Where(ubj => ubj.Id != u.Id).ToList()
+                    }).ToList(),
+                    DidNotFinish = u.WantReadJoin.Where(wrj => wrj.BookType == BookType.DNF).Select(ub => new
                     Book
                     {
                         Id = ub.BookId,
