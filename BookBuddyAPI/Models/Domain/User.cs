@@ -24,6 +24,9 @@ namespace BookBuddyAPI.Models.Domain
         public List<Book>? WantToRead { get; set; }
         [NotMapped]
         public List<Book>? HaveRead { get; set; }
+        public List<Book>? CurrentlyReading { get; set; }
+
+        public List<Book>? DidNotFinish { get; set; }
         //public List<Buddy> Buddies { get; set; }
         public List<User>? SentBuddyRequests { get; set; }
         public List<User>? ReceivedBuddyRequests { get; set; }

@@ -22,6 +22,7 @@
         WantToRead,
         Read,
         Favorite,
-        Reading
+        Reading,
+        DNF // Did Not Finish
     }
 }
