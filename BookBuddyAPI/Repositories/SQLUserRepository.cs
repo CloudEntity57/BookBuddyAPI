@@ -161,6 +161,7 @@ Book
                     Email = u.Email,
                     AvatarUrl = u.AvatarUrl,
                     ProfileImage = u.ProfileImage,
+                    PasswordHash = u.PasswordHash,
                     UserName = u.UserName,
                     CreatedAt = u.CreatedAt,
                     LastLoginAt = u.LastLoginAt,

@@ -1,11 +1,16 @@
-﻿using BookbuddyAPI.Services;
+﻿using System.Security.Authentication;
+using BookbuddyAPI.Services;
+using BookBuddyAPI.Models.Domain;
 using BookBuddyAPI.Models.DTO;
 using BookBuddyAPI.Repositories;
 using BookBuddyAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Options;
+using NuGet.Common;
 
 namespace BookBuddyAPI.Controllers
 {
@@ -17,14 +22,18 @@ namespace BookBuddyAPI.Controllers
         private readonly ITokenRepository tokenRepository;
 
         private readonly IExternalAuthService _googleAuthService;
+        private readonly IAuthService _authService;
+        private readonly IUserRepository _userRepository;
         private readonly OAuthSettings _settings;
 
-        public AuthController(ITokenRepository tokenRepository, IExternalAuthService googleAuthService, IOptions<OAuthSettings> options)
+        public AuthController(ITokenRepository tokenRepository, IExternalAuthService googleAuthService, IAuthService authService, IOptions<OAuthSettings> options, IUserRepository userRepository)
         {
             // this.userManager = userManager;
             this.tokenRepository = tokenRepository;
             this._googleAuthService = googleAuthService;
             this._settings = options.Value;
+            this._authService = authService;
+            this._userRepository = userRepository;
         }
 
         // POST: /api/Auth/Register
@@ -59,6 +68,7 @@ namespace BookBuddyAPI.Controllers
         // POST: /api/Auth/login
 
         [HttpGet]
+        // GET: /api/auth/google/login
         [Route("google/login")]
         public async Task<IActionResult> GoogleLogin()
         {
@@ -69,6 +79,7 @@ namespace BookBuddyAPI.Controllers
 
         [HttpGet]
         [Route("google/callback")]
+        // GET: /api/auth/google/callback
         public async Task<IActionResult> GoogleCallback(
             [FromQuery] string code,
             [FromQuery] string state)
@@ -88,5 +99,57 @@ namespace BookBuddyAPI.Controllers
 
             return Redirect($"{frontendUrl}?token={Uri.EscapeDataString(jwt)}");
         }
+
+        // Register a new User with email/username/password:
+
+        [HttpPost]
+        [Route("register")]
+        [AllowAnonymous]
+        // POST: /api/auth/register
+        public async Task<IActionResult> RegisterWithEmail(
+            [FromBody] RegisterRequest request
+        )
+        {
+            try
+            {
+                var result = await _authService.RegisterEmailAsync(request);
+                return Ok(result);
+            }
+            catch (AuthenticationException ex)
+            {
+                return Conflict(new
+                {
+                    message = ex.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        [Route("login")]
+        [AllowAnonymous]
+        // POST /api/auth/login
+        public async Task<IActionResult> LoginWithEmail(
+            [FromBody] LoginRequestDto loginRequest
+        )
+        {   
+            var email = loginRequest.Username;
+            var password = loginRequest.Password;
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            if(user == null)
+            {
+                return Unauthorized();
+            }
+            var token = await _authService.GenerateTokenFromPassword(user, email, password);
+            if(token == null)
+            {
+                return Unauthorized();
+            }
+            var authResult = new AuthResult {
+                Token = token,
+                Provider = AuthProvider.Local
+            };
+            return Ok(authResult);
+        }
+
     }
 }
