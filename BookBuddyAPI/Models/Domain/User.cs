@@ -14,6 +14,7 @@ namespace BookBuddyAPI.Models.Domain
         public string? AvatarUrl { get; set; }
         public string? UserMessage { get; set; }
         public string? BookOfInterest { get; set; }
+        public string? PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public byte[]? ProfileImage { get; set; }  // Will map to VARBINARY(MAX)
@@ -36,6 +37,7 @@ namespace BookBuddyAPI.Models.Domain
         public ICollection<ConversationMember> ConversationMembers { get; set; } = new List<ConversationMember>();
         public ICollection<Message> Messages { get; set; } = new List<Message>();
         public ICollection<MessageReaction> MessageReactions { get; set; } = new List<MessageReaction>();
+        public ICollection<UserAuthIdentity> AuthIdentities { get; set; } = new List<UserAuthIdentity>();
 
     }
 }

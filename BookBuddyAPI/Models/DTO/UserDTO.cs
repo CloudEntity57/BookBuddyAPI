@@ -12,6 +12,7 @@ namespace BookBuddyAPI.Models.DTO
         public string? BookOfInterest { get; set; }
         public string? Email { get; set; }
         public string? AvatarUrl { get; set; }
+        // public string? PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public string? ProfileImageUrl { get; set; }

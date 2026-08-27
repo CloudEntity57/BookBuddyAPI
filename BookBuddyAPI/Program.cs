@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using BookbuddyAPI.Services;
+using BookBuddyAPI.Models.Domain;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -94,7 +95,9 @@ builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IBuddyRequestService, BuddyRequestService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 // Register custom OAuth service
 builder.Services.AddScoped<IExternalAuthService, GoogleAuthService>();
