@@ -28,6 +28,24 @@ namespace BookBuddyAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<UserAuthIdentity>()
+                    .HasKey(x => x.Id);
+            modelBuilder.Entity<UserAuthIdentity>()
+                    .HasOne(x => x.User)
+                    .WithMany(x => x.AuthIdentities)
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<UserAuthIdentity>()
+                    .HasIndex(x => new { x.Provider, x.ProviderKey })
+                    .IsUnique();
+            modelBuilder.Entity<User>()
+                    .HasIndex(x => x.Email)
+                    .IsUnique();
+            modelBuilder.Entity<User>()
+                    .HasIndex(x => x.UserName)
+                    .IsUnique();
+
+
 
             modelBuilder.Entity<UserBook>()
                 .HasKey(ub => new { ub.UserId, ub.BookId }); // composite PK
