@@ -38,8 +38,15 @@ namespace BookBuddyAPI.Controllers
                 return NotFound();
             }
             var userDomainModel = await repository.GetUserByEmailAsync(email);
+            if (userDomainModel == null)
+            {
+                return NotFound();
+            }
             //return Ok(mapper.Map<UserDTO>(userDomainModel));
             var userDto = mapper.Map<UserDTO>(userDomainModel);
+            userDto.ProfileImageUrl = userDomainModel.ProfileImage != null
+                ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{userDomainModel.Id}"
+                : null;
             return Ok(userDto);
         }
 
@@ -59,7 +66,7 @@ namespace BookBuddyAPI.Controllers
             //return Ok(mapper.Map<UserDTO>(userDomainModel));
             var userDto = mapper.Map<UserDTO>(userDomainModel);
             userDto.ProfileImageUrl = userDomainModel.ProfileImage != null
-                ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{userDomainModel.Id}/image"
+                ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{userDomainModel.Id}"
                 : null;
             return Ok(userDto);
         }
@@ -78,7 +85,7 @@ namespace BookBuddyAPI.Controllers
             //return Ok(mapper.Map<UserDTO>(userDomainModel));
             var userDto = mapper.Map<UserDTO>(userDomainModel);
             userDto.ProfileImageUrl = userDomainModel.ProfileImage != null
-                ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{userDomainModel.Id}/image"
+                ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{userDomainModel.Id}"
                 : null;
             return Ok(userDto);
         }
