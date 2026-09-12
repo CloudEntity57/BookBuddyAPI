@@ -98,7 +98,9 @@ namespace BookBuddyAPI.Controllers
             {
                 return NotFound();
             }
-            return Ok(mapper.Map<List<UserDTO>>(buddiesDomainModel));
+            var buddyDTO = mapper.Map<List<UserDTO>>(buddiesDomainModel);
+            
+            return Ok(buddyDTO);
         }
     }
 }
