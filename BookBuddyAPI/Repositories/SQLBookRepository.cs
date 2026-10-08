@@ -60,7 +60,9 @@ namespace BookBuddyAPI.Repositories
                         AvatarUrl = ubj.User.AvatarUrl,
                         UserName = ubj.User.UserName,
                         CreatedAt = ubj.User.CreatedAt,
-                        LastLoginAt = ubj.User.LastLoginAt
+                        LastLoginAt = ubj.User.LastLoginAt,
+                        // back end supplies partial link to profile image, and front end uses environment variables to supply domain of the url
+                        ProfileImageUrl = ubj.User.ProfileImage != null ? $"/users/profile-image/{ubj.User.Id}" : null
                     }).ToList(),
                 }).FirstOrDefaultAsync(x => x.Author.ToLower() == author.ToLower() && x.Title.ToLower() == title.ToLower());
 

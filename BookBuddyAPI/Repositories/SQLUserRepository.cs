@@ -37,6 +37,7 @@ namespace BookBuddyAPI.Repositories
                     CreatedAt = u.CreatedAt,
                     LastLoginAt = u.LastLoginAt,
                     ProfileImage = u.ProfileImage,
+                    ProfileImageUrl = u.ProfileImage != null ? $"/api/users/profile-image/{u.Id}" : null,
                     WantToRead = u.WantReadJoin.Where(wrj => wrj.BookType == BookType.WantToRead).Select(ub => new
 Book
                     {
