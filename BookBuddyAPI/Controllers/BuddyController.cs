@@ -98,6 +98,13 @@ namespace BookBuddyAPI.Controllers
             {
                 return NotFound();
             }
+            buddiesDomainModel.ForEach(buddy =>
+            {
+                buddy.ProfileImageUrl = buddy.ProfileImage != null
+                    ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{buddy.Id}"
+                    : null;
+            });
+            
             return Ok(mapper.Map<List<UserDTO>>(buddiesDomainModel));
         }
     }
