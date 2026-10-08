@@ -98,9 +98,14 @@ namespace BookBuddyAPI.Controllers
             {
                 return NotFound();
             }
-            var buddyDTO = mapper.Map<List<UserDTO>>(buddiesDomainModel);
+            buddiesDomainModel.ForEach(buddy =>
+            {
+                buddy.ProfileImageUrl = buddy.ProfileImage != null
+                    ? $"{Request.Scheme}://{Request.Host}/api/users/profile-image/{buddy.Id}"
+                    : null;
+            });
             
-            return Ok(buddyDTO);
+            return Ok(mapper.Map<List<UserDTO>>(buddiesDomainModel));
         }
     }
 }
