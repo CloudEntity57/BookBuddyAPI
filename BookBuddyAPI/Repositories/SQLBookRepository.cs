@@ -73,6 +73,24 @@ namespace BookBuddyAPI.Repositories
             return bookDomainModel;
         }
 
+        public async Task<BookRating> AddRatingAsync(BookRating rating)
+        {
+            await dbContext.BookRatings.AddAsync(rating);
+            await dbContext.SaveChangesAsync();
+            return rating;
+        }
+
+        public async Task<Boolean> DeleteRatingAsync(Guid userId, Guid bookId)
+        {
+            var existingRating = await dbContext.BookRatings.FirstOrDefaultAsync(x => x.UserId == userId && x.BookId == bookId);
+            if (existingRating != null)
+            {
+                dbContext.BookRatings.Remove(existingRating);
+                await dbContext.SaveChangesAsync();
+            }
+            return true;
+        }
+
         public Task<Book?> GetBookByIdAsync(Guid id)
         {
             throw new NotImplementedException();

@@ -21,6 +21,8 @@ namespace BookBuddyAPI.Models.DTO
         public List<BookDTO>? HaveRead { get; set; }
         public List<BookDTO>? CurrentlyReading { get; set; }
         public List<BookDTO>? DidNotFinish { get; set; }
+        public List<BookRatingDTO>? BookRatings { get; set; }
+        public List<BookReviewDTO>? BookReviews { get; set; }
         //public List<BookDTO>? HaveRead { get; set; }
         public List<UserDTO>? ReceivedBuddyRequests { get; set; }
         public List<UserDTO>? SentBuddyRequests { get; set; }
