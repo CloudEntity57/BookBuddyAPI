@@ -34,6 +34,8 @@ namespace BookBuddyAPI.Models.Domain
         public List<User>? ReceivedBuddyRequests { get; set; }
         public List<BuddyRequest>? SentBuddyRequestsJoin { get; set; }
         public List<BuddyRequest>? ReceivedBuddyRequestsJoin { get; set; }
+        public ICollection<BookRating>? BookRatings { get; set; } = new List <BookRating>();
+        public ICollection<BookReview>? BookReviews { get; set; } = new List<BookReview>();
         //public List<Book>? HaveRead { get; set; }
         public ICollection<ConversationMember> ConversationMembers { get; set; } = new List<ConversationMember>();
         public ICollection<Message> Messages { get; set; } = new List<Message>();

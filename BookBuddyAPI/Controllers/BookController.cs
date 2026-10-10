@@ -48,6 +48,20 @@ namespace BookBuddyAPI.Controllers
             return Ok(bookDomainModel);
         }
         [HttpPut]
+        [Route("rating")]
+        // PUT: api/Book/rating
+        public async Task<IActionResult> AddRating([FromBody] AddRatingDTO addRatingDto)
+        {
+            BookRating ratingDomainModel = mapper.Map<BookRating>(addRatingDto);
+            await repository.DeleteRatingAsync(ratingDomainModel.UserId, ratingDomainModel.BookId);
+
+            ratingDomainModel = await repository.AddRatingAsync(ratingDomainModel);
+
+            var ratingDTO = mapper.Map<BookRatingDTO>(ratingDomainModel);
+
+            return Ok(ratingDTO);
+        }
+        [HttpPut]
         [Route("read_status")]
         // PUT: api/Book/want_to_read
         public async Task<IActionResult> UpdateUserBook([FromBody] UserBook userBook)

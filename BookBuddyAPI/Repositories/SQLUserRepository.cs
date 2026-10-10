@@ -26,6 +26,8 @@ namespace BookBuddyAPI.Repositories
         {
             var userDomainModel = await dbContext.Users
                 .Where(x => x.Id == id)
+                .Include(u => u.BookRatings)
+                .Include(u => u.BookReviews)
                 .Select(u => new User
                 {
                     Id = u.Id,
@@ -33,6 +35,8 @@ namespace BookBuddyAPI.Repositories
                     LastName = u.LastName,
                     Email = u.Email,
                     AvatarUrl = u.AvatarUrl,
+                    BookRatings = u.BookRatings,
+                    BookReviews = u.BookReviews,
                     UserName = u.UserName,
                     CreatedAt = u.CreatedAt,
                     LastLoginAt = u.LastLoginAt,
@@ -154,6 +158,8 @@ Book
         {
             var userDomainModel = await dbContext.Users
                 .Where(x => x.Email == email)
+                .Include(u => u.BookRatings)
+                .Include(u => u.BookReviews)
                 .Select(u => new User
                 {
                     Id = u.Id,
@@ -165,6 +171,8 @@ Book
                     PasswordHash = u.PasswordHash,
                     UserName = u.UserName,
                     CreatedAt = u.CreatedAt,
+                    BookReviews = u.BookReviews,
+                    BookRatings = u.BookRatings,
                     LastLoginAt = u.LastLoginAt,
                     WantToRead =  u.WantReadJoin.Where(wrj => wrj.BookType == BookType.WantToRead).Select(ub => new
                     Book

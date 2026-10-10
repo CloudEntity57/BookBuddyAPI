@@ -23,6 +23,8 @@ namespace BookBuddyAPI.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<MessageReaction> MessageReactions { get; set; }
         public DbSet<ExternalLogin> ExternalLogins { get; set; }
+        public DbSet<BookRating> BookRatings { get; set; }
+        public DbSet<BookReview> BookReviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -125,6 +127,57 @@ namespace BookBuddyAPI.Data
                 .WithOne(m => m.Conversation)
                 .HasForeignKey(m => m.ConversationId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<BookRating>(entity =>
+            {
+                // Primary key
+                entity.HasKey(br => br.Id);
+
+                // User foreign key
+                entity.HasOne(br => br.User)
+                    .WithMany(u => u.BookRatings)
+                    .HasForeignKey(br => br.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Book foreign key
+                entity.HasOne(br => br.Book)
+                    .WithMany()
+                    .HasForeignKey(br => br.BookId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Rating validation at the database level
+                entity.Property(br => br.Rating)
+                    .IsRequired();
+
+                // Prevent duplicate ratings by the same user for the same book
+                entity.HasIndex(br => new { br.UserId, br.BookId })
+                    .IsUnique();
+            });
+            modelBuilder.Entity<BookReview>(entity =>
+            {
+                // Primary key
+                entity.HasKey(br => br.Id);
+
+                // User foreign key
+                entity.HasOne(br => br.User)
+                    .WithMany(u => u.BookReviews)
+                    .HasForeignKey(br => br.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Book foreign key
+                entity.HasOne(br => br.Book)
+                    .WithMany()
+                    .HasForeignKey(br => br.BookId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Review validation at the database level
+                entity.Property(br => br.Review)
+                    .IsRequired()
+                    .HasMaxLength(1000);
+
+                // Prevent duplicate reviews by the same user for the same book
+                entity.HasIndex(br => new { br.UserId, br.BookId })
+                    .IsUnique();
+            });
 
         }
     }
