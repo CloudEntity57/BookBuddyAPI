@@ -51,6 +51,64 @@ namespace BookBuddyAPI.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.BookRating", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId", "BookId")
+                        .IsUnique();
+
+                    b.ToTable("BookRatings");
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.BookReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Review")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId", "BookId")
+                        .IsUnique();
+
+                    b.ToTable("BookReviews");
+                });
+
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.Buddy", b =>
                 {
                     b.Property<Guid>("UserAId")
@@ -405,6 +463,44 @@ namespace BookBuddyAPI.Migrations
                         .HasForeignKey("UserId1");
                 });
 
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.BookRating", b =>
+                {
+                    b.HasOne("BookBuddyAPI.Models.Domain.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookBuddyAPI.Models.Domain.User", "User")
+                        .WithMany("BookRatings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BookBuddyAPI.Models.Domain.BookReview", b =>
+                {
+                    b.HasOne("BookBuddyAPI.Models.Domain.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookBuddyAPI.Models.Domain.User", "User")
+                        .WithMany("BookReviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.Buddy", b =>
                 {
                     b.HasOne("BookBuddyAPI.Models.Domain.User", "UserA")
@@ -565,6 +661,10 @@ namespace BookBuddyAPI.Migrations
             modelBuilder.Entity("BookBuddyAPI.Models.Domain.User", b =>
                 {
                     b.Navigation("AuthIdentities");
+
+                    b.Navigation("BookRatings");
+
+                    b.Navigation("BookReviews");
 
                     b.Navigation("ConversationMembers");
 
