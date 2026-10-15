@@ -28,7 +28,9 @@ namespace BookBuddyAPI.Mappings
             CreateMap<BookRating, BookRatingDTO>().ReverseMap();
             CreateMap<BookReview, BookReviewDTO>().ReverseMap();
             CreateMap<BookRating, AddRatingDTO>().ReverseMap();
-            // CreateMap<BookReview, AddReviewDTO>().ReverseMap();
+            CreateMap<BookReview, AddReviewDTO>().ReverseMap();
+            CreateMap<BookReview, UserBookReviewDTO>().ReverseMap();
+            CreateMap<User, ReviewUserDTO>();
         }
     }
 }
