@@ -57,6 +57,9 @@ namespace BookBuddyAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ApiId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("BookId")
                         .HasColumnType("uniqueidentifier");
 
@@ -85,6 +88,9 @@ namespace BookBuddyAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ApiId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("BookId")
                         .HasColumnType("uniqueidentifier");
 
@@ -93,8 +99,8 @@ namespace BookBuddyAPI.Migrations
 
                     b.Property<string>("Review")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(10000)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
