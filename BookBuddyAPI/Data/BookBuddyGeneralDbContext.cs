@@ -172,7 +172,7 @@ namespace BookBuddyAPI.Data
                 // Review validation at the database level
                 entity.Property(br => br.Review)
                     .IsRequired()
-                    .HasMaxLength(1000);
+                    .HasMaxLength(10000);
 
                 // Prevent duplicate reviews by the same user for the same book
                 entity.HasIndex(br => new { br.UserId, br.BookId })

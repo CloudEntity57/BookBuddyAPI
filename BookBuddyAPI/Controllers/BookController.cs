@@ -35,6 +35,21 @@ namespace BookBuddyAPI.Controllers
             var bookDTO = mapper.Map<BookDTO>(bookDomainModel);
             return Ok(bookDTO);
         }
+        [HttpGet]
+        [Route("Reviews/{databaseBookId}")]
+        // GET: api/Book/Reviews/{databaseBookId}
+        // retrieves reviews based on the ID of the book entry generated in the SQL book table, which helps track multiple editions of a book under a single entry based on author/title
+        public async Task<IActionResult> GetBookReviewsByDatabaseBookID([FromRoute] string databaseBookId)
+        {
+            if(databaseBookId == null)
+            {
+                return BadRequest();
+            }
+            var bookGuid = Guid.Parse(databaseBookId);
+            var bookReviewsDomainModel = await repository.GetBookReviewsAsync(bookGuid);
+            var bookReviewsDTO = mapper.Map<List<BookReviewDTO>>(bookReviewsDomainModel);
+            return Ok(bookReviewsDTO);
+        }
         [HttpPost]
         //  POST: api/Book
         public async Task<IActionResult> AddBookByAuthorTitle([FromBody] AddBookDTO createBookDto)
@@ -46,6 +61,16 @@ namespace BookBuddyAPI.Controllers
             var bookDTO = mapper.Map<BookDTO>(bookDomainModel);
 
             return Ok(bookDomainModel);
+        }
+        [HttpPost]
+        [Route("Review")]
+        // POST: api/Book/Review
+        public async Task<IActionResult> AddReview([FromBody] AddReviewDTO addReviewDto)
+        {
+            BookReview reviewDomainModel = mapper.Map<BookReview>(addReviewDto);
+            reviewDomainModel = await repository.AddReviewAsync(reviewDomainModel);
+            var reviewDTO = mapper.Map<UserBookReviewDTO>(reviewDomainModel);
+            return Ok(reviewDTO);
         }
         [HttpPut]
         [Route("rating")]
@@ -62,6 +87,20 @@ namespace BookBuddyAPI.Controllers
             return Ok(ratingDTO);
         }
         [HttpPut]
+        [Route("Review")]
+        // PUT api/Book/Review
+        public async Task<IActionResult> UpdateReview([FromBody] UpdateReviewDTO updateReviewDTO)
+        {
+            UpdateReview updateReview = mapper.Map<UpdateReview>(updateReviewDTO);
+            BookReview? updatedBookReviewDomainModel = await repository.UpdateReviewAsync(updateReview);
+            if(updatedBookReviewDomainModel == null)
+            {
+                return NotFound();
+            }
+            var updatedBookReview = mapper.Map<UserBookReviewDTO>(updatedBookReviewDomainModel);
+            return Ok(updatedBookReview);
+        }
+        [HttpPut]
         [Route("read_status")]
         // PUT: api/Book/want_to_read
         public async Task<IActionResult> UpdateUserBook([FromBody] UserBook userBook)
@@ -76,6 +115,19 @@ namespace BookBuddyAPI.Controllers
             var userBookDto = await repository.CreateUserBookAsync(userBook);
             logger.LogInformation("New UserBook Added - " + userBookDto);
             return Ok(userBookDto);
+        }
+        [HttpDelete]
+        [Route("Review/{reviewId}")]
+        // DELETE: api/Book/Review/{reviewId}
+        public async Task<IActionResult> DeleteReview([FromRoute] string reviewId)
+        {
+            Guid Id = Guid.Parse(reviewId);
+            var deleted = await repository.DeleteReviewAsync(Id);
+            if(deleted == false)
+            {
+                return NotFound();
+            }
+            return Ok(true);
         }
         [HttpDelete]
         [Route("currently_reading/{userId}/{bookId}")]

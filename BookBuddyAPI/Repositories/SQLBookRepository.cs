@@ -90,6 +90,63 @@ namespace BookBuddyAPI.Repositories
             }
             return true;
         }
+        public async Task<BookReview> AddReviewAsync(BookReview review)
+        {
+            await dbContext.BookReviews.AddAsync(review);
+            await dbContext.SaveChangesAsync();
+            return review;
+        }
+        public async Task<BookReview?> UpdateReviewAsync(UpdateReview review)
+        {
+            var existingReview = await dbContext.BookReviews.FirstOrDefaultAsync(existing => existing.Id == review.Id);
+            if(existingReview == null)
+            {
+                return null;
+            }
+            existingReview.Review = review.Review;
+            existingReview.CreatedAt = DateTime.UtcNow;
+            try
+            {
+                await dbContext.SaveChangesAsync();
+                return await dbContext.BookReviews
+                .FirstOrDefaultAsync(r => r.Id == review.Id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteReviewAsync(Guid Id)
+        {
+            var existingReview = await dbContext.BookReviews.FirstOrDefaultAsync(m => m.Id == Id);
+
+            if (existingReview == null)
+                return false;
+            try
+            {
+                dbContext.BookReviews.Remove(existingReview);
+                await dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false; // In production, log the exception
+            }
+        }
+
+        public async Task<List<BookReview>> GetBookReviewsAsync(Guid bookId)
+        {
+            List<BookReview> bookReviews = await dbContext.BookReviews
+            .Include(br => br.User)
+            .Where(br => br.BookId == bookId)
+            .ToListAsync();
+            if(bookReviews == null)
+            {
+                return [];
+            };
+            return bookReviews;
+        }
 
         public Task<Book?> GetBookByIdAsync(Guid id)
         {

@@ -5,6 +5,7 @@ namespace BookBuddyAPI.Models.Domain
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid BookId { get; set; }
+        public string? ApiId { get; set; }
         public int Rating { get; set; }
         public User? User { get; set; }
         public Book? Book { get; set; }
